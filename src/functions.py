@@ -1,6 +1,6 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
-from config import path, imagen_config
+from .config import path, imagen_config
 from faster_whisper import WhisperModel as WM
 import sys
 import os
