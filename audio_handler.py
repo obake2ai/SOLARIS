@@ -2,18 +2,29 @@ import time
 import os
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from src.config import path
+from src.config import path, imagen_config
+
+from src import functions
 
 class MP3EventHandler(FileSystemEventHandler):
     def __init__(self, folder_path):
         self.folder_path = folder_path
+        self.size_imagen = imagen_config.SIZE_IMAGEN
+        self.timesteps_imagen = imagen_config.TIMESTEPS_IMAGEN
+        self.model_imagen = imagen_config.PATH_IMAGEN
+        self.path_output = imagen_config.PATH_OUTPUT
 
     def on_modified(self, event):
         if event.is_directory:
             return
         if event.src_path.endswith(".mp3"):
-            relative_path = os.path.relpath(event.src_path, self.folder_path)
-            print(f"Updated MP3 file: {relative_path}")
+            print(f"Updated MP3 file: {event.src_path}")
+            # self.start_whisper()
+
+    def start_whisper(self, audio_path):
+        print ("hoge")
+
+
 
 def watch_folder(folder_path):
     event_handler = MP3EventHandler(folder_path)
