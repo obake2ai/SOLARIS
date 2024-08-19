@@ -19,6 +19,7 @@ class AudioEventHandler(FileSystemEventHandler):
                                 checkpoint_path=self.model_imagen,
                                 image_size=self.size_imagen,
                                 timesteps=self.timesteps_imagen)
+        print("Initial setup complete...Waiting for audio input...")
 
     def on_modified(self, event):
         if event.is_directory:
