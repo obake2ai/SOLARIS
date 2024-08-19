@@ -41,8 +41,8 @@ def test_imagen():
     }
 
     path = {
-        'PATH_IMAGEN': imagen_config.PATH_IMAGEN,
-        'PATH_OUTPUT': imagen_config.PATH_OUTPUT,
+        'PATH_IMAGEN': path.PATH_IMAGEN,
+        'PATH_OUTPUT': path.PATH_OUTPUT,
     }
 
     # クラスを初期化して使用
