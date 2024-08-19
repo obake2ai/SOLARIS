@@ -11,8 +11,8 @@ class MP3EventHandler(FileSystemEventHandler):
         self.folder_path = folder_path
         self.size_imagen = imagen_config.SIZE_IMAGEN
         self.timesteps_imagen = imagen_config.TIMESTEPS_IMAGEN
-        self.model_imagen = imagen_config.PATH_IMAGEN
-        self.path_output = imagen_config.PATH_OUTPUT
+        self.model_imagen = path.PATH_IMAGEN
+        self.path_output = path.PATH_OUTPUT
 
     def on_modified(self, event):
         if event.is_directory:
