@@ -55,7 +55,7 @@ class WhisperModel:
 
         return segment.text
 
-def test_imagen():
+def test_imagen(prompt=None):
     imagen_config = {
         'SIZE_IMAGEN': 128,
         'TIMESTEPS_IMAGEN': 1000,
@@ -67,9 +67,10 @@ def test_imagen():
                         image_size=imagen_config['SIZE_IMAGEN'],
                         timesteps=imagen_config['TIMESTEPS_IMAGEN'])
 
-    prompt = "Example prompt text"
+    if not prompt:
+        prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
-    generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample.png")
+    generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample_{prompt}.png")
 
 
 def test_whisper():
@@ -83,7 +84,14 @@ def test_whisper():
     check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
     with open(check_txtfile, 'w') as f:
         f.write(transcribe_text)
+    return transcribe_text
+
+def test_whisper_imagen():
+    transcribe_text = test_whisper()
+    test_imagen(transcribe_text)
+
 
 if __name__ == '__main__':
     #test_imagen()
-    test_whisper()
+    # test_whisper()
+    test_whisper_imagen()
