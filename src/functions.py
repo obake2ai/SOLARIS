@@ -83,7 +83,7 @@ def test_whisper():
     check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
     with open(check_txtfile, 'w') as f:
         f.wirte(transcribe_text)
-    generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample.png")
 
 if __name__ == '__main__':
     test_imagen()
+    test_whisper()
