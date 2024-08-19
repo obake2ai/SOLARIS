@@ -1,7 +1,7 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
 from config import path, imagen_config
-from faster_whisper import WhisperModel
+from faster_whisper import WhisperModel as WM
 import sys
 import os
 
@@ -45,7 +45,7 @@ class WhisperModel:
         self.whisper = self.load_whisper()
 
     def load_whisper(self):
-        model = WhisperModel("medium", device="cuda" if torch.cuda.is_available() else "cpu")
+        model = WM("medium", device="cuda" if torch.cuda.is_available() else "cpu")
         return model
 
     def transcribe_audio2text(self, audio_file):
@@ -85,5 +85,5 @@ def test_whisper():
         f.wirte(transcribe_text)
 
 if __name__ == '__main__':
-    test_imagen()
+    #test_imagen()
     test_whisper()
