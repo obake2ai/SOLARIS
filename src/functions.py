@@ -54,3 +54,6 @@ def test_imagen():
     prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
     generated_image.save(f"{path['PATH_OUTPUT']}/sample.png")
+
+if __name__ == '__main__':
+    test_imagen()
