@@ -53,4 +53,4 @@ def test_imagen():
     # 画像を生成
     prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
-    generated_image.save(f"{path['PATH_OUTPUT'])}/sample.png")
+    generated_image.save(f"{path['PATH_OUTPUT']}/sample.png")
