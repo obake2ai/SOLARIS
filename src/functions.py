@@ -2,7 +2,7 @@ from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Ima
 import torch
 from config import path, imagen_config
 import sys
-
+import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class ImagenModel:
