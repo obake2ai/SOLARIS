@@ -82,7 +82,7 @@ def test_whisper():
     transcribe_text = model.transcribe_audio2text(whisper_config['PATH_AUDIOFILE'])
     check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
     with open(check_txtfile, 'w') as f:
-        f.wirte(transcribe_text)
+        f.write(transcribe_text)
 
 if __name__ == '__main__':
     #test_imagen()
