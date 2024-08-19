@@ -41,7 +41,7 @@ def test_imagen():
     }
 
     path = {
-        'PATH_IMAGEN': 'path/to/imagen_checkpoint.pth'
+        'PATH_IMAGEN': imagen_config.PATH_IMAGEN
     }
 
     # クラスを初期化して使用

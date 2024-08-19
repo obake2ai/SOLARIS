@@ -1,1 +1,1 @@
-PATH_IMAGEN = "./models/"
+PATH_IMAGEN = "./models/checkpoint-601.pt"
