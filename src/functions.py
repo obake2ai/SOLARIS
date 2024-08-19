@@ -42,6 +42,7 @@ def test_imagen():
 
     path = {
         'PATH_IMAGEN': imagen_config.PATH_IMAGEN
+        'PATH_OUTPUT': imagen_config.PATH_OUTPUT
     }
 
     # クラスを初期化して使用
@@ -52,4 +53,4 @@ def test_imagen():
     # 画像を生成
     prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
-    generated_image.show()
+    generated_image.save(f"{path['PATH_OUTPUT'])}/sample.png")
