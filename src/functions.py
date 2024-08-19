@@ -58,7 +58,7 @@ class WhisperModel:
 def test_imagen(prompt=None):
     imagen_config = {
         'SIZE_IMAGEN': 128,
-        'TIMESTEPS_IMAGEN': 100,
+        'TIMESTEPS_IMAGEN': 500,
         'PATH_IMAGEN': path.PATH_IMAGEN,
         'PATH_OUTPUT': path.PATH_OUTPUT,
     }
