@@ -1,6 +1,6 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
-from .config import path, imagen_config
+from ..config import path, imagen_config
 
 class ImagenModel:
     def __init__(self, checkpoint_path, image_size, timesteps):
