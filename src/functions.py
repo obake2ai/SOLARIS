@@ -38,22 +38,19 @@ def test_imagen():
     imagen_config = {
         'SIZE_IMAGEN': 128,
         'TIMESTEPS_IMAGEN': 1000,
-    }
-
-    path = {
         'PATH_IMAGEN': path.PATH_IMAGEN,
         'PATH_OUTPUT': path.PATH_OUTPUT,
     }
 
     # クラスを初期化して使用
-    model = ImagenModel(checkpoint_path=path['PATH_IMAGEN'],
+    model = ImagenModel(checkpoint_path=imagen_config['PATH_IMAGEN'],
                         image_size=imagen_config['SIZE_IMAGEN'],
                         timesteps=imagen_config['TIMESTEPS_IMAGEN'])
 
     # 画像を生成
     prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
-    generated_image.save(f"{path['PATH_OUTPUT']}/sample.png")
+    generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample.png")
 
 if __name__ == '__main__':
     test_imagen()
