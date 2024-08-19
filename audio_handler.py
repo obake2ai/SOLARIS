@@ -6,7 +6,7 @@ from src.config import path, imagen_config
 
 from src import functions
 
-class MP3EventHandler(FileSystemEventHandler):
+class AudioEventHandler(FileSystemEventHandler):
     def __init__(self, folder_path):
         self.folder_path = folder_path
         self.size_imagen = imagen_config.SIZE_IMAGEN
@@ -27,7 +27,7 @@ class MP3EventHandler(FileSystemEventHandler):
             print(f"Updated Audio file: {event.src_path}")
             detected_text = self.start_whisper(event.src_path)
             print((f"Detected text: {detected_text}"))
-            start_imagen(detected_text)
+            self.start_imagen(detected_text)
 
     def start_whisper(self, audio_path):
         transcribe_text = self.wisper.transcribe_audio2text(audio_path)
@@ -43,7 +43,7 @@ class MP3EventHandler(FileSystemEventHandler):
 
 
 def watch_folder(folder_path):
-    event_handler = MP3EventHandler(folder_path)
+    event_handler = AudioEventHandler(folder_path)
     observer = Observer()
     observer.schedule(event_handler, folder_path, recursive=True)
     observer.start()
