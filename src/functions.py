@@ -1,8 +1,10 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
 from config import path, imagen_config
+from faster_whisper import WhisperModel
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class ImagenModel:
@@ -37,6 +39,22 @@ class ImagenModel:
                                     batch_size=1, return_pil_images=True)
         return images[0]
 
+class WhisperModel:
+    def __init__(self):
+        self.checkpoint_path = None
+        self.whisper = self.load_whisper()
+
+    def load_whisper(self):
+        model = WhisperModel("medium", device="cuda" if torch.cuda.is_available() else "cpu")
+        return model
+
+    def transcribe_audio2text(self, audio_file):
+        segments, info = self.whisper.transcribe(audio_file)
+        for segment in segments:
+            print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
+
+        return segment.text
+
 def test_imagen():
     imagen_config = {
         'SIZE_IMAGEN': 128,
@@ -45,14 +63,26 @@ def test_imagen():
         'PATH_OUTPUT': path.PATH_OUTPUT,
     }
 
-    # クラスを初期化して使用
     model = ImagenModel(checkpoint_path=imagen_config['PATH_IMAGEN'],
                         image_size=imagen_config['SIZE_IMAGEN'],
                         timesteps=imagen_config['TIMESTEPS_IMAGEN'])
 
-    # 画像を生成
     prompt = "Example prompt text"
     generated_image = model.generate_image(prompt)
+    generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample.png")
+
+
+def test_whisper():
+    whisper_config = {
+        'PATH_AUDIOFILE': path.PATH_AUDIOFILE,
+        'PATH_OUTPUT': path.PATH_OUTPUT,
+    }
+
+    model = WhisperModel()
+    transcribe_text = model.transcribe_audio2text(whisper_config['PATH_AUDIOFILE'])
+    check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
+    with open(check_txtfile, 'w') as f:
+        f.wirte(transcribe_text)
     generated_image.save(f"{imagen_config['PATH_OUTPUT']}/sample.png")
 
 if __name__ == '__main__':
