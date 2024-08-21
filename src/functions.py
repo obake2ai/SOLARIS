@@ -37,7 +37,7 @@ class ImagenModel:
     def generate_image(self, prompt):
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
-        return images[0]
+        return images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
 
 class WhisperModel:
     def __init__(self):
