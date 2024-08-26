@@ -68,15 +68,14 @@ class ImagenModel:
         third_of_width = image_width // 3
 
         # Calculate the exact position for the index text to be centered in the leftmost third
-        index_text_width, _ = draw.textsize(index, font=font)
-        index_x = (third_of_width - index_text_width) // 2  # Centering within the leftmost third
+        index_x = third_of_width // 2  # Center position of the leftmost third
         index_position = (index_x, text_position[1])
 
-        # Add the index to the image
-        draw.text(index_position, index, fill=text_color, font=font)
+        # Add the index to the image, centered in the leftmost third
+        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")
 
         # Add the prompt text to the image, left-aligned at text_position
-        draw.text(text_position, prompt, fill=text_color, font=font, anchor="la")
+        draw.text(text_position, prompt, fill=text_color, font=font)
 
         return image
 
