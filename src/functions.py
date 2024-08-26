@@ -50,10 +50,13 @@ class WhisperModel:
 
     def transcribe_audio2text(self, audio_file):
         segments, info = self.whisper.transcribe(audio_file)
-        for segment in segments:
-            print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
+        full_text = ''.join(segment.text for segment in segments)
+        detected_language = info['language']
 
-        return segment.text
+        print(f"Detected Language: {detected_language}")
+        print(f"Detected Text: {full_text}")
+
+        return full_text, detected_language
 
 def test_imagen(prompt=None):
     imagen_config = {
