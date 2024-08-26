@@ -6,29 +6,31 @@ import os
 import time
 
 def record_audio(duration, filename):
-    # 録音コマンド
+    # arecordを使って録音
+    wav_filename = filename + '.wav'
     command = [
-        'ffmpeg',
-        '-f', 'alsa',  # ALSAを使用する
-        '-i', 'hw:1,0',  # デバイスのIDを指定 (arecord -lで確認したものに合わせる)
-        '-t', str(duration),  # 録音時間
-        '-acodec', 'pcm_s16le',  # 音声コーデック（WAVフォーマット）
-        filename + '.wav'  # 出力ファイル名
+        'arecord',
+        '-D', 'hw:1,0',  # デバイスIDを指定
+        '-f', 'cd',  # フォーマット：16-bit little-endian, 44100Hz, ステレオ
+        '-t', 'wav',
+        '-d', str(duration),  # 録音時間
+        wav_filename
     ]
 
     print(f"{duration}秒間のオーディオを{filename}に録音しています...")
 
-    # ffmpegコマンドを実行して録音
+    # arecordコマンドを実行して録音
     subprocess.run(command, check=True)
 
     # pydubを使用してWAVファイルをMP3に変換
-    audio = AudioSegment.from_wav(filename + '.wav')
-    audio.export(filename + '.mp3', format="mp3")
+    audio = AudioSegment.from_wav(wav_filename)
+    mp3_filename = filename + '.mp3'
+    audio.export(mp3_filename, format="mp3")
 
     # 一時的なWAVファイルを削除
-    os.remove(filename + '.wav')
+    os.remove(wav_filename)
 
-    print(f"{filename}.mp3 に保存されました")
+    print(f"{mp3_filename}に保存されました")
 
 def record_at_intervals(duration, interval, output_folder, file_prefix):
     count = 0
