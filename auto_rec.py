@@ -40,12 +40,16 @@ def move_to_output(tmp_filename, output_filename):
     print(f"Moved to {output_filename}")
 
 def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix):
+    counter = 0
     while True:
-        tmp_filename = os.path.join(tmp_folder, f"{file_prefix}")
-        output_filename = os.path.join(output_folder, f"{file_prefix}.mp3")
+        counter += 1
+        tmp_filename = os.path.join(tmp_folder, f"{file_prefix}_{counter}")
+        output_filename = os.path.join(output_folder, f"{file_prefix}_{counter}.mp3")
 
+        # 一時フォルダに録音
         tmp_mp3_filename = record_audio(duration, tmp_filename)
 
+        # 録音が完了したらoutputフォルダに移動
         move_to_output(tmp_mp3_filename, output_filename)
 
         time.sleep(interval)

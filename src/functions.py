@@ -4,14 +4,19 @@ from .config import path, imagen_config
 from faster_whisper import WhisperModel as WM
 import sys
 import os
+from PIL import ImageDraw, ImageFont, ImageEnhance
+import numpy as np
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class ImagenModel:
-    def __init__(self, checkpoint_path, image_size, timesteps):
+    def __init__(self, checkpoint_path, image_size, timesteps, font_path):
         self.checkpoint_path = checkpoint_path
         self.image_size = image_size
         self.timesteps = timesteps
+        self.font_path = path.PATH_FONT_EN
+        self.caption_x = imagen_config.CAPTION_X
+        self.caption_y = imagen_config.CAPTION_Y
         self.imagen = self.load_imagen()
 
     def load_imagen(self):
@@ -34,10 +39,27 @@ class ImagenModel:
         imagen.load_state_dict(checkpoint['model'])
         return imagen
 
-    def generate_image(self, prompt):
+    def generate_image(self, prompt, text_position=(10, 10)):
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
-        return images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
+        image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
+        return self.add_caption(image, prompt, text_position)
+
+    def add_caption(self, image, prompt, text_position):
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype(self.font_path, size=40)
+
+        # Calculate the brightness of the image
+        grayscale_image = image.convert("L")
+        brightness = np.array(grayscale_image).mean()
+
+        # Determine text color based on brightness
+        text_color = "white" if brightness < 128 else "black"
+
+        # Add text to the image at the specified position
+        draw.text(text_position, prompt, fill=text_color, font=font)
+
+        return image
 
 class WhisperModel:
     def __init__(self):
