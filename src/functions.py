@@ -41,7 +41,7 @@ class ImagenModel:
         imagen.load_state_dict(checkpoint['model'])
         return imagen
 
-    def generate_image(self, index, prompt, lang='ja'):
+    def generate_image(self, prompt, index, lang='ja'):
         text_position = (self.caption_x, self.caption_y)
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
