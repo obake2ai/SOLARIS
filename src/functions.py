@@ -14,7 +14,7 @@ class ImagenModel:
         self.checkpoint_path = checkpoint_path
         self.image_size = image_size
         self.timesteps = timesteps
-        self.font_path = path.PATH_FONT_EN
+        self.font_path_en = path.PATH_FONT_EN
         self.caption_x = imagen_config.CAPTION_X
         self.caption_y = imagen_config.CAPTION_Y
         self.font_size = imagen_config.CAPTION_SIZE
@@ -74,7 +74,7 @@ class WhisperModel:
 
     def transcribe_audio2text(self, audio_file):
         segments, info = self.whisper.transcribe(audio_file)
-        print(info)
+        print(info.language)
         detected_list = []
         for segment in segments:
             print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
