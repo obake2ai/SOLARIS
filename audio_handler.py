@@ -27,9 +27,9 @@ class AudioEventHandler(FileSystemEventHandler):
         if event.src_path.endswith(".mp3"):
             print(f"New Audio file created: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
-                detected_text = self.start_whisper(event.src_path)
+                detected_text, detected_language = self.start_whisper(event.src_path)
                 print((f"Detected text: {detected_text}"))
-                self.start_imagen(detected_text)
+                self.start_imagen(detected_text, detected_language)
             else:
                 print("File creation did not stabilize within timeout.")
 
@@ -39,21 +39,21 @@ class AudioEventHandler(FileSystemEventHandler):
         if event.src_path.endswith(".mp3"):
             print(f"Updated Audio file: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
-                detected_text = self.start_whisper(event.src_path)
+                detected_text, detected_language = self.start_whisper(event.src_path)
                 print((f"Detected text: {detected_text}"))
-                self.start_imagen(detected_text)
+                self.start_imagen(detected_text, detected_language)
             else:
                 print("File modification did not stabilize within timeout.")
 
     def start_whisper(self, audio_path):
-        transcribe_text = self.wisper.transcribe_audio2text(audio_path)
+        transcribe_text, detected_language = self.wisper.transcribe_audio2text(audio_path)
         check_txtfile = f"{self.path_output}/whisper_output.txt"
         with open(check_txtfile, 'w') as f:
             f.write(transcribe_text)
-        return transcribe_text
+        return transcribe_text, detected_language
 
-    def start_imagen(self, prompt):
-        generated_image = self.imagen.generate_image(prompt)
+    def start_imagen(self, prompt, detected_language):
+        generated_image = self.imagen.generate_image(prompt, detected_language)
         generated_image.save(f"{self.path_output}/imagen_output_{prompt}.png")
         print(f"Imagen saved: {self.path_output}/imagen_output_{prompt}.png")
 

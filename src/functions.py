@@ -14,6 +14,7 @@ class ImagenModel:
         self.checkpoint_path = checkpoint_path
         self.image_size = image_size
         self.timesteps = timesteps
+        self.font_path_ja = path.PATH_FONT_JA
         self.font_path_en = path.PATH_FONT_EN
         self.caption_x = imagen_config.CAPTION_X
         self.caption_y = imagen_config.CAPTION_Y
@@ -40,16 +41,20 @@ class ImagenModel:
         imagen.load_state_dict(checkpoint['model'])
         return imagen
 
-    def generate_image(self, prompt):
+    def generate_image(self, prompt, lang='ja'):
         text_position = (self.caption_x, self.caption_y)
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
         image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
-        return self.add_caption(image, prompt, text_position)
+        return self.add_caption(image, prompt, text_position, lang)
 
-    def add_caption(self, image, prompt, text_position):
+    def add_caption(self, image, prompt, text_position, lang='ja'):
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(self.font_path, size=self.font_size)
+
+        if lang == 'ja'
+            font = ImageFont.truetype(self.font_path_ja, size=self.font_size)
+        else:
+            font = ImageFont.truetype(self.font_path_en, size=self.font_size)
 
         # Calculate the brightness of the image
         grayscale_image = image.convert("L")
@@ -74,7 +79,6 @@ class WhisperModel:
 
     def transcribe_audio2text(self, audio_file):
         segments, info = self.whisper.transcribe(audio_file)
-        print(info.language)
         detected_list = []
         for segment in segments:
             print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
@@ -82,7 +86,7 @@ class WhisperModel:
 
         detected_text = ' '.join(detected_list)
 
-        return detected_text
+        return detected_text, info.language
 
     # def transcribe_audio2text(self, audio_file):
     #     segments, info = self.whisper.transcribe(audio_file)
