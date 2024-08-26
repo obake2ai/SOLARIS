@@ -5,6 +5,7 @@ import scipy.io.wavfile as wav
 import os
 import time
 from pydub import AudioSegment
+from src.config import path
 
 def record_audio(duration, filename):
     # サンプルレートの設定
