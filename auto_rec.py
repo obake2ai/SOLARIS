@@ -34,7 +34,7 @@ def record_audio(duration, filename):
 def record_at_intervals(duration, interval, output_folder, file_prefix):
     count = 0
     while True:
-        filename = os.path.join(output_folder, f"{file_prefix}_{count}")
+        filename = os.path.join(output_folder, f"{file_prefix}")
         record_audio(duration, filename)
         count += 1
         time.sleep(interval)
