@@ -1,4 +1,4 @@
-from src.config import path
+from src.config import path, imagen_config
 
 from pydub import AudioSegment
 import subprocess
@@ -58,8 +58,8 @@ def record_at_intervals(duration, interval, tmp_folder, output_folder, file_pref
 tmp_folder = path.PATH_TMP
 output_folder = path.PATH_INPUT
 file_prefix = "recording"
-duration = 10  # 録音する秒数
-interval = 60  # 録音する間隔（秒）
+duration = imagen_config.AUDIO_LENGTH
+interval = imagen_config.AUDIO_INTERVAL
 
 # tmpフォルダとoutputフォルダが存在しない場合は作成
 if not os.path.exists(tmp_folder):
