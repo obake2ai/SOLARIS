@@ -13,6 +13,7 @@ def record_audio(duration, filename):
         '-D', 'hw:1,0',  # デバイスIDを指定
         '-f', 'cd',  # フォーマット：16-bit little-endian, 44100Hz, ステレオ
         '-t', 'wav',
+        '-c', '1',
         '-d', str(duration),  # 録音時間
         wav_filename
     ]
@@ -33,11 +34,9 @@ def record_audio(duration, filename):
     print(f"{mp3_filename}に保存されました")
 
 def record_at_intervals(duration, interval, output_folder, file_prefix):
-    count = 0
     while True:
-        filename = os.path.join(output_folder, f"{file_prefix}_{count}")
+        filename = os.path.join(output_folder, f"{file_prefix}")
         record_audio(duration, filename)
-        count += 1
         time.sleep(interval)
 
 # 使用例
