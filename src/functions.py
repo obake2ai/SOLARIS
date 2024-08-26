@@ -17,6 +17,7 @@ class ImagenModel:
         self.font_path = path.PATH_FONT_EN
         self.caption_x = imagen_config.CAPTION_X
         self.caption_y = imagen_config.CAPTION_Y
+        self.font_size = imagen_config.CAPTION_SIZE
         self.imagen = self.load_imagen()
 
     def load_imagen(self):
@@ -39,7 +40,8 @@ class ImagenModel:
         imagen.load_state_dict(checkpoint['model'])
         return imagen
 
-    def generate_image(self, prompt, text_position=(10, 10)):
+    def generate_image(self, prompt):
+        text_position = (self.caption_x, self.caption_y)
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
         image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
@@ -47,7 +49,7 @@ class ImagenModel:
 
     def add_caption(self, image, prompt, text_position):
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(self.font_path, size=40)
+        font = ImageFont.truetype(self.font_path, size=self.font_size)
 
         # Calculate the brightness of the image
         grayscale_image = image.convert("L")
