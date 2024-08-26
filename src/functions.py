@@ -72,12 +72,14 @@ class ImagenModel:
         index_position = (index_x, text_position[1])
 
         # Add the index to the image, centered in the leftmost third
-        draw.text(index_position, index, fill=text_color, font=font, anchor="ms")  # 'ms' aligns the middle of the text with the middle of the y-coordinate
+        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")  # 'mm' for middle alignment
 
-        # Add the prompt text to the image, left-aligned at text_position
-        draw.text(text_position, prompt, fill=text_color, font=font, anchor="la")  # 'la' aligns the left edge of the text with the y-coordinate
+        # Add the prompt text to the image, left-aligned but vertically centered with the same anchor
+        prompt_position = (text_position[0], text_position[1])
+        draw.text(prompt_position, prompt, fill=text_color, font=font, anchor="lm")  # 'lm' for left-middle alignment
 
         return image
+
 
 
 class WhisperModel:
