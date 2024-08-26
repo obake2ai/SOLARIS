@@ -69,7 +69,7 @@ def record_at_intervals(duration, interval, output_folder, file_prefix):
 # 使用例
 output_folder = path.PATH_INPUT
 file_prefix = "recording"
-duration = 10  # 録音する秒数
+duration = 5  # 録音する秒数
 interval = 60  # 録音する間隔（秒）
 
 record_at_intervals(duration, interval, output_folder, file_prefix)
