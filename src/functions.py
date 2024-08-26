@@ -74,23 +74,34 @@ class WhisperModel:
 
     def transcribe_audio2text(self, audio_file):
         segments, info = self.whisper.transcribe(audio_file)
+        detected_list = []
+        for segment in segments:
+            print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
+            detected_list.append(segment.text)
 
-        # Check the type and content of info
-        print(f"Info type: {type(info)}")
-        print(f"Info content: {info}")
+        detected_text = ' '.join(detected_list)
+        
+        return detected_text
 
-        if isinstance(info, dict):
-            detected_language = info['language']
-        else:
-            # Handle the case where info is not a dict
-            detected_language = "Unknown"
-
-        full_text = ''.join(segment.text for segment in segments)
-
-        print(f"Detected Language: {detected_language}")
-        print(f"Detected Text: {full_text}")
-
-        return full_text, detected_language
+    # def transcribe_audio2text(self, audio_file):
+    #     segments, info = self.whisper.transcribe(audio_file)
+    #
+    #     # Check the type and content of info
+    #     print(f"Info type: {type(info)}")
+    #     print(f"Info content: {info}")
+    #
+    #     if isinstance(info, dict):
+    #         detected_language = info['language']
+    #     else:
+    #         # Handle the case where info is not a dict
+    #         detected_language = "Unknown"
+    #
+    #     full_text = ''.join(segment.text for segment in segments)
+    #
+    #     print(f"Detected Language: {detected_language}")
+    #     print(f"Detected Text: {full_text}")
+    #
+    #     return full_text, detected_language
 
 
 def test_imagen(prompt=None):
