@@ -14,7 +14,7 @@ def record_audio(duration, filename):
     print(f"{duration}秒間のオーディオを{filename}に録音しています...")
 
     # 録音
-    recording = sd.rec(int(duration * fs), samplerate=fs, channels=2, dtype='int16')
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=1, dtype='int16')
     sd.wait()  # 録音終了まで待機
 
     # WAVファイルとして保存
