@@ -20,6 +20,9 @@ class AudioEventHandler(FileSystemEventHandler):
                                 image_size=self.size_imagen,
                                 timesteps=self.timesteps_imagen)
 
+        self.index_1 = 0
+        self.index_2 = 0
+
         print("Initial setup complete...Waiting for audio input...")
 
     def on_created(self, event):
@@ -54,11 +57,22 @@ class AudioEventHandler(FileSystemEventHandler):
         return transcribe_text, detected_language
 
     def start_imagen(self, prompt, detected_language):
-        generated_image = self.imagen.generate_image(prompt, detected_language)
+        index = self.get_next_index()
+        generated_image = self.imagen.generate_image(prompt, index, detected_language)
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        output_filename = f"{self.path_output}/imagen_output_{timestamp}.png"
+        output_filename = f"{self.path_output}/imagen_output_{timestamp}_{index}.png"
         generated_image.save(output_filename)
         print(f"Imagen saved: {output_filename}")
+
+    def get_next_index(self):
+        current_index = f"{self.index_1}-{self.index_2}"
+        self.index_2 += 1
+        if self.index_2 > 999:
+            self.index_2 = 0
+            self.index_1 += 1
+            if self.index_1 > 999:
+                self.index_1 = 0
+        return current_index
 
     def wait_for_file_creation(self, filepath, timeout=imagen_config.AUDIO_LENGTH):
         previous_size = -1

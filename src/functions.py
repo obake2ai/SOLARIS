@@ -41,14 +41,14 @@ class ImagenModel:
         imagen.load_state_dict(checkpoint['model'])
         return imagen
 
-    def generate_image(self, prompt, lang='ja'):
+    def generate_image(self, index, prompt, lang='ja'):
         text_position = (self.caption_x, self.caption_y)
         images = self.imagen.sample(texts=[prompt],
                                     batch_size=1, return_pil_images=True)
         image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
-        return self.add_caption(image, prompt, text_position, lang)
+        return self.add_caption(image, prompt, index, text_position, lang)
 
-    def add_caption(self, image, prompt, text_position, lang='ja'):
+    def add_caption(self, image, prompt, index, text_position, lang='ja'):
         draw = ImageDraw.Draw(image)
 
         if lang == 'ja':
@@ -63,7 +63,15 @@ class ImagenModel:
         # Determine text color based on brightness
         text_color = "white" if brightness < 128 else "black"
 
-        # Add text to the image at the specified position
+        # Calculate the leftmost area's center for the index
+        image_width, _ = image.size
+        third_of_width = image_width // 3
+        index_position = (third_of_width // 2, text_position[1])
+
+        # Add the index to the image
+        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")
+
+        # Add the prompt text to the image
         draw.text(text_position, prompt, fill=text_color, font=font)
 
         return image
