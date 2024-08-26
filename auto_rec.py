@@ -21,7 +21,7 @@ def record_audio(duration, filename):
                     rate=fs,
                     frames_per_buffer=chunk,
                     input=True,
-                    input_device_index=None,  # 必要に応じて入力デバイスを指定
+                    input_device_index=1,  # 必要に応じて入力デバイスを指定
                     stream_callback=None,
                     start=True)
 
