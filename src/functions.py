@@ -72,10 +72,10 @@ class ImagenModel:
         index_position = (index_x, text_position[1])
 
         # Add the index to the image, centered in the leftmost third
-        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")
+        draw.text(index_position, index, fill=text_color, font=font, anchor="ms")  # 'ms' aligns the middle of the text with the middle of the y-coordinate
 
         # Add the prompt text to the image, left-aligned at text_position
-        draw.text(text_position, prompt, fill=text_color, font=font)
+        draw.text(text_position, prompt, fill=text_color, font=font, anchor="la")  # 'la' aligns the left edge of the text with the y-coordinate
 
         return image
 
