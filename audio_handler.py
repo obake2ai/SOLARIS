@@ -4,6 +4,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from src.config import path, imagen_config
 from src import functions
+from datetime import datetime
 
 class AudioEventHandler(FileSystemEventHandler):
     def __init__(self, folder_path):
@@ -54,8 +55,10 @@ class AudioEventHandler(FileSystemEventHandler):
 
     def start_imagen(self, prompt, detected_language):
         generated_image = self.imagen.generate_image(prompt, detected_language)
-        generated_image.save(f"{self.path_output}/imagen_output_{prompt}.png")
-        print(f"Imagen saved: {self.path_output}/imagen_output_{prompt}.png")
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+        output_filename = f"{self.path_output}/imagen_output_{timestamp}.png"
+        generated_image.save(output_filename)
+        print(f"Imagen saved: {output_filename}")
 
     def wait_for_file_creation(self, filepath, timeout=imagen_config.AUDIO_LENGTH):
         previous_size = -1
