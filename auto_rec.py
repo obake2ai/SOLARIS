@@ -7,7 +7,7 @@ from src.config import path
 
 def record_audio(duration, filename):
     # オーディオ録音のパラメータ
-    chunk = 2048  # チャンクサイズを増やしてオーバーフローを防ぐ
+    chunk = 4096  # チャンクサイズを増やしてオーバーフローを防ぐ
     sample_format = pyaudio.paInt16  # 16ビットサンプル
     channels = 1
     fs = 44100  # 44100Hzで録音
@@ -69,7 +69,7 @@ def record_at_intervals(duration, interval, output_folder, file_prefix):
 # 使用例
 output_folder = path.PATH_INPUT
 file_prefix = "recording"
-duration = 30  # 録音する秒数
+duration = 10  # 録音する秒数
 interval = 60  # 録音する間隔（秒）
 
 record_at_intervals(duration, interval, output_folder, file_prefix)
