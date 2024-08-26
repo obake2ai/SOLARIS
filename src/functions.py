@@ -51,7 +51,7 @@ class ImagenModel:
     def add_caption(self, image, prompt, text_position, lang='ja'):
         draw = ImageDraw.Draw(image)
 
-        if lang == 'ja'
+        if lang == 'ja':
             font = ImageFont.truetype(self.font_path_ja, size=self.font_size)
         else:
             font = ImageFont.truetype(self.font_path_en, size=self.font_size)
