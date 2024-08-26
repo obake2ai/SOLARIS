@@ -10,7 +10,7 @@ import numpy as np
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 class ImagenModel:
-    def __init__(self, checkpoint_path, image_size, timesteps, font_path):
+    def __init__(self, checkpoint_path, image_size, timesteps):
         self.checkpoint_path = checkpoint_path
         self.image_size = image_size
         self.timesteps = timesteps
