@@ -74,13 +74,14 @@ class WhisperModel:
 
     def transcribe_audio2text(self, audio_file):
         segments, info = self.whisper.transcribe(audio_file)
+        print(info)
         detected_list = []
         for segment in segments:
             print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
             detected_list.append(segment.text)
 
         detected_text = ' '.join(detected_list)
-        
+
         return detected_text
 
     # def transcribe_audio2text(self, audio_file):
