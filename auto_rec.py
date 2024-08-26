@@ -4,10 +4,11 @@ from pydub import AudioSegment
 import subprocess
 import os
 import time
+import shutil
 
-def record_audio(duration, filename):
+def record_audio(duration, tmp_filename):
     # arecordを使って録音
-    wav_filename = filename + '.wav'
+    wav_filename = tmp_filename + '.wav'
     command = [
         'arecord',
         '-D', 'hw:1,0',  # デバイスIDを指定
@@ -18,35 +19,53 @@ def record_audio(duration, filename):
         wav_filename
     ]
 
-    print(f"{duration}秒間のオーディオを{filename}に録音しています...")
+    print(f"Recording audio for {duration} seconds to {tmp_filename}...")
 
     # arecordコマンドを実行して録音
     subprocess.run(command, check=True)
 
     # pydubを使用してWAVファイルをMP3に変換
     audio = AudioSegment.from_wav(wav_filename)
-    mp3_filename = filename + '.mp3'
+    mp3_filename = tmp_filename + '.mp3'
     audio.export(mp3_filename, format="mp3")
 
     # 一時的なWAVファイルを削除
     os.remove(wav_filename)
 
-    print(f"{mp3_filename}に保存されました")
+    return mp3_filename
 
-def record_at_intervals(duration, interval, output_folder, file_prefix):
+def move_to_output(tmp_filename, output_filename):
+    # ファイルをtmpからoutputフォルダに移動
+    shutil.move(tmp_filename, output_filename)
+    print(f"Moved to {output_filename}")
+
+def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix):
+    counter = 0
     while True:
-        filename = os.path.join(output_folder, f"{file_prefix}")
-        record_audio(duration, filename)
+        counter += 1
+        tmp_filename = os.path.join(tmp_folder, f"{file_prefix}_{counter}")
+        output_filename = os.path.join(output_folder, f"{file_prefix}_{counter}.mp3")
+
+        # 一時フォルダに録音
+        tmp_mp3_filename = record_audio(duration, tmp_filename)
+
+        # 録音が完了したらoutputフォルダに移動
+        move_to_output(tmp_mp3_filename, output_filename)
+
         time.sleep(interval)
 
 # 使用例
+tmp_folder = path.PATH_TMP
 output_folder = path.PATH_INPUT
 file_prefix = "recording"
 duration = 10  # 録音する秒数
 interval = 60  # 録音する間隔（秒）
 
-# 出力フォルダが存在しない場合は作成
+# tmpフォルダとoutputフォルダが存在しない場合は作成
+if not os.path.exists(tmp_folder):
+    os.makedirs(tmp_folder)
+
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-record_at_intervals(duration, interval, output_folder, file_prefix)
+record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix)
