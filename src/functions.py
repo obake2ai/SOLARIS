@@ -63,18 +63,23 @@ class ImagenModel:
         # Determine text color based on brightness
         text_color = "white" if brightness < 128 else "black"
 
-        # Calculate the leftmost area's center for the index
+        # Calculate the width of the image
         image_width, _ = image.size
         third_of_width = image_width // 3
-        index_position = (third_of_width // 2, text_position[1])
+
+        # Calculate the exact position for the index text to be centered in the leftmost third
+        index_text_width, _ = draw.textsize(index, font=font)
+        index_x = (third_of_width - index_text_width) // 2  # Centering within the leftmost third
+        index_position = (index_x, text_position[1])
 
         # Add the index to the image
-        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")
+        draw.text(index_position, index, fill=text_color, font=font)
 
-        # Add the prompt text to the image
-        draw.text(text_position, prompt, fill=text_color, font=font)
+        # Add the prompt text to the image, left-aligned at text_position
+        draw.text(text_position, prompt, fill=text_color, font=font, anchor="la")
 
         return image
+
 
 class WhisperModel:
     def __init__(self):
