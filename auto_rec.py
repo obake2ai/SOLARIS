@@ -1,52 +1,24 @@
-import pyaudio
-import wave
-import time
+
+import sounddevice as sd
+import numpy as np
+import scipy.io.wavfile as wav
 import os
+import time
 from pydub import AudioSegment
-from src.config import path
 
 def record_audio(duration, filename):
-    # オーディオ録音のパラメータ
-    chunk = 4096  # チャンクサイズを増やしてオーバーフローを防ぐ
-    sample_format = pyaudio.paInt16  # 16ビットサンプル
-    channels = 1
+    # サンプルレートの設定
     fs = 44100  # 44100Hzで録音
-    p = pyaudio.PyAudio()
 
     print(f"{duration}秒間のオーディオを{filename}に録音しています...")
 
-    # ストリームを開く
-    stream = p.open(format=sample_format,
-                    channels=channels,
-                    rate=fs,
-                    frames_per_buffer=chunk,
-                    input=True,
-                    input_device_index=1,  # 必要に応じて入力デバイスを指定
-                    stream_callback=None,
-                    start=True)
+    # 録音
+    recording = sd.rec(int(duration * fs), samplerate=fs, channels=2, dtype='int16')
+    sd.wait()  # 録音終了まで待機
 
-    frames = []
-
-    # 指定された期間録音する
-    for _ in range(0, int(fs / chunk * duration)):
-        data = stream.read(chunk)
-        frames.append(data)
-
-    # ストリームを停止し閉じる
-    stream.stop_stream()
-    stream.close()
-
-    # PortAudioインターフェースを終了
-    p.terminate()
-
-    # 録音したデータをWAVファイルとして保存
+    # WAVファイルとして保存
     wav_filename = filename + '.wav'
-    wf = wave.open(wav_filename, 'wb')
-    wf.setnchannels(channels)
-    wf.setsampwidth(p.get_sample_size(sample_format))
-    wf.setframerate(fs)
-    wf.writeframes(b''.join(frames))
-    wf.close()
+    wav.write(wav_filename, fs, recording)
 
     # pydubを使用してWAVファイルをMP3に変換
     audio = AudioSegment.from_wav(wav_filename)
@@ -71,5 +43,9 @@ output_folder = path.PATH_INPUT
 file_prefix = "recording"
 duration = 5  # 録音する秒数
 interval = 60  # 録音する間隔（秒）
+
+# 出力フォルダが存在しない場合は作成
+if not os.path.exists(output_folder):
+    os.makedirs(output_folder)
 
 record_at_intervals(duration, interval, output_folder, file_prefix)
