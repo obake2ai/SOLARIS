@@ -25,7 +25,7 @@ class AudioEventHandler(FileSystemEventHandler):
     def on_modified(self, event):
         if event.is_directory:
             return
-        if event.src_path.endswith(".wav"):
+        if event.src_path.endswith(".mp3"):
             print(f"Updated Audio file: {event.src_path}")
             detected_text = self.start_whisper(event.src_path)
             print((f"Detected text: {detected_text}"))
