@@ -53,6 +53,7 @@ def record_at_intervals(duration, interval, tmp_folder, output_folder, file_pref
         tmp_mp3_filename = record_audio(duration, tmp_filename)
 
         move_to_output(tmp_mp3_filename, output_filename)
+        os.chmod(output_filename, 0o666)
 
         delete_old_files(output_folder, limit=100)
 
