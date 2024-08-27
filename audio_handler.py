@@ -63,6 +63,7 @@ class AudioEventHandler(FileSystemEventHandler):
         output_filename = f"{self.path_output}/imagen_output_{timestamp}_{index}.png"
         generated_image.save(output_filename)
         print(f"Imagen saved: {output_filename}")
+        os.chmod(output_filename, 0o666)
 
     def get_next_index(self):
         current_index = f"{self.index_1}-{self.index_2}"
