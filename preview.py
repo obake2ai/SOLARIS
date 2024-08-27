@@ -15,9 +15,9 @@ def get_latest_image(folder_path):
     latest_file = max(files, key=os.path.getctime)
     return latest_file
 
-def blend_images(img1_path, img2_path, duration, fps, screen_size):
-    img1 = np.asarray(Image.open(img1_path).resize(screen_size, Image.ANTIALIAS))
-    img2 = np.asarray(Image.open(img2_path).resize(screen_size, Image.ANTIALIAS))
+def blend_images(img1_path, img2_path, duration, fps):
+    img1 = np.asarray(Image.open(img1_path))
+    img2 = np.asarray(Image.open(img2_path))
 
     total_pixels = img1.shape[0] * img1.shape[1]
     num_frames = int(fps * duration)
@@ -44,14 +44,20 @@ def blend_images(img1_path, img2_path, duration, fps, screen_size):
     return blended_images
 
 def display_image(screen, image_array):
-    pygame_image = pygame.surfarray.make_surface(image_array)
-    pygame_image = pygame.transform.scale(pygame_image, screen.get_size())
+    img = Image.fromarray(image_array)
+    img = img.resize(screen.get_size(), Image.ANTIALIAS)
+    mode = img.mode
+    size = img.size
+    data = img.tobytes()
+
+    pygame_image = pygame.image.fromstring(data, size, mode)
     screen.blit(pygame_image, (0, 0))
     pygame.display.flip()
 
 def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//4, fps=24):
     pygame.init()
     info = pygame.display.Info()
+    # screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     screen = pygame.display.set_mode((info.current_w, info.current_h))
     pygame.display.set_caption("solaris")
     clock = pygame.time.Clock()
@@ -69,12 +75,13 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
             shutil.copy(latest_image_path, new_image_path)
 
             if previous_image:
-                transition_images = blend_images(previous_image, new_image_path, transition_duration, fps, screen.get_size())
+                transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
                     #clock.tick(fps)  # 指定されたfpsでスリープ
             else:
-                img = Image.open(new_image_path).resize(screen.get_size(), Image.ANTIALIAS)
+                img = Image.open(new_image_path)
+                img = img.resize(screen.get_size(), Image.ANTIALIAS)
                 display_image(screen, np.asarray(img))
 
             previous_image = new_image_path
