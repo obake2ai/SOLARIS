@@ -61,12 +61,16 @@ class AudioEventHandler(FileSystemEventHandler):
 
     def start_imagen(self, prompt, detected_language):
         index = self.get_next_index()
-        generated_image = self.imagen.generate_image(prompt, index, detected_language)
-        timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        output_filename = f"{self.path_output}/imagen_output_{timestamp}_{index}.png"
-        generated_image.save(output_filename)
-        print(f"Imagen saved: {output_filename}")
-        os.chmod(output_filename, 0o666)
+        try:
+            generated_image = self.imagen.generate_image(prompt, index, detected_language)
+            timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+            output_filename = f"{self.path_output}/imagen_output_{timestamp}_{index}.png"
+            print(f"Saving image to {output_filename}")
+            generated_image.save(output_filename)
+            print(f"Imagen saved: {output_filename}")
+            os.chmod(output_filename, 0o666)
+        except Exception as e:
+            print(f"Error saving image: {e}")
 
     def get_next_index(self):
         current_index = f"{self.index_1}-{self.index_2}"
