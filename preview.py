@@ -39,7 +39,7 @@ def blend_images(img1_path, img2_path, duration, fps):
         flat_blended[current_indices] = flat_img2[current_indices]
         blended = flat_blended.reshape(img1.shape)
 
-        blended_images.append(blended)
+        blended_images.append(blended.copy())  # コピーを保存して、変化を保持
 
     return blended_images
 
