@@ -54,9 +54,9 @@ class AudioEventHandler(FileSystemEventHandler):
 
     def start_whisper(self, audio_path):
         transcribe_text, detected_language = self.wisper.transcribe_audio2text(audio_path)
-        check_txtfile = f"{self.path_output}/whisper_output.txt"
-        with open(check_txtfile, 'w') as f:
-            f.write(transcribe_text)
+        # check_txtfile = f"{self.path_output}/whisper_output.txt"
+        # with open(check_txtfile, 'w') as f:
+        #     f.write(transcribe_text)
         return transcribe_text, detected_language
 
     def start_imagen(self, prompt, detected_language):
