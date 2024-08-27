@@ -63,9 +63,9 @@ class ImagenModel:
             font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
 
             if lang == 'ja':
-                font_prompt = self.font_path_ja
+                font_prompt = ImageFont.truetype(self.font_path_ja, size=self.font_size)
             else:
-                font_prompt = self.font_path_en
+                font_prompt = ImageFont.truetype(self.font_path_en, size=self.font_size)
 
             # Brightness calculation and text color determination
             grayscale_image = image.convert("L")
@@ -105,7 +105,7 @@ class ImagenModel:
             return image
         except Exception as e:
             print(f"Error adding caption: {e}")
-            return image  # エラー時にはキャプションなしの画像を返すか、適切な処理を追加
+            return image
 
 
 
