@@ -57,6 +57,7 @@ def display_image(screen, image_array):
 def main(watch_folder, preview_folder, transition_duration=2, fps=24):
     pygame.init()
     info = pygame.display.Info()
+    # screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     clock = pygame.time.Clock()
 
