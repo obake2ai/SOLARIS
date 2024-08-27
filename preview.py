@@ -16,8 +16,10 @@ def get_latest_image(folder_path):
 def display_image(ax, image_path):
     img = Image.open(image_path)
     img = img.resize((fig.canvas.get_width_height()), Image.ANTIALIAS)  # 画像をウィンドウサイズにスケーリング
+    ax.clear()  # 余白が残らないようにクリア
     ax.imshow(img)
-    plt.axis('off')
+    ax.axis('off')  # 軸を非表示
+    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  # 余白を取り除く
     plt.draw()
     plt.pause(1/24)  # 1/24秒待機
 
@@ -27,6 +29,9 @@ def main(folder_path):
     fig, ax = plt.subplots()
     mng = plt.get_current_fig_manager()
     mng.full_screen_toggle()  # フルスクリーンモードにする
+    fig.canvas.toolbar_visible = False  # ツールバーを非表示
+    fig.canvas.header_visible = False  # ヘッダーを非表示
+    fig.canvas.footer_visible = False  # フッターを非表示
     fig.canvas.mpl_connect('key_press_event', on_key)
 
     while True:
