@@ -54,7 +54,7 @@ def display_image(screen, image_array):
     screen.blit(pygame_image, (0, 0))
     pygame.display.flip()
 
-def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL, fps=24):
+def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//2, fps=24):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
