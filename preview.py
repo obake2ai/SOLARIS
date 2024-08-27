@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_q
-from src.config import path, imagen_config
+from src.config import path
 
 def get_latest_image(folder_path):
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
@@ -54,17 +54,18 @@ def display_image(screen, image_array):
     screen.blit(pygame_image, (0, 0))
     pygame.display.flip()
 
-def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//2, fps=24):
+def main(watch_folder, preview_folder, transition_duration=2, fps=24):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
+    clock = pygame.time.Clock()
 
     previous_image = None
-    while True:
+    running = True
+    while running:
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_q):
-                pygame.quit()
-                sys.exit(0)
+                running = False
 
         latest_image_path = get_latest_image(watch_folder)
         if latest_image_path and (previous_image is None or latest_image_path != previous_image):
@@ -75,7 +76,7 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
-                    time.sleep(1 / fps)
+                    clock.tick(fps)  # 指定されたfpsでスリープ
             else:
                 img = Image.open(new_image_path)
                 img = img.resize(screen.get_size(), Image.ANTIALIAS)
@@ -83,7 +84,10 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
 
             previous_image = new_image_path
 
-        time.sleep(1 / fps)
+        clock.tick(fps // 2)  # メインループを適度な速さで回す
+
+    pygame.quit()
+    sys.exit(0)
 
 if __name__ == "__main__":
     watch_folder = path.PATH_OUTPUT
