@@ -1,11 +1,12 @@
 import os
 import time
+import sys
 from PIL import Image
 import matplotlib.pyplot as plt
+from matplotlib import rcParams
 from src.config import path
 
 def get_latest_image(folder_path):
-    """フォルダ内の最新の画像ファイルを取得"""
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
     if not files:
         return None
@@ -13,21 +14,31 @@ def get_latest_image(folder_path):
     return latest_file
 
 def display_image(ax, image_path):
-    """画像を表示"""
     img = Image.open(image_path)
+    img = img.resize((fig.canvas.get_width_height()), Image.ANTIALIAS)  # 画像をウィンドウサイズにスケーリング
     ax.imshow(img)
+    plt.axis('off')
     plt.draw()
     plt.pause(1/24)  # 1/24秒待機
 
 def main(folder_path):
-    """メインループ"""
     plt.ion()  # インタラクティブモードをオンにする
+    global fig, ax
     fig, ax = plt.subplots()
+    mng = plt.get_current_fig_manager()
+    mng.full_screen_toggle()  # フルスクリーンモードにする
+    fig.canvas.mpl_connect('key_press_event', on_key)
+
     while True:
         latest_image = get_latest_image(folder_path)
         if latest_image:
             display_image(ax, latest_image)
         time.sleep(1/24)  # 1/24秒ごとに画像を更新
+
+def on_key(event):
+    if event.key == 'q':
+        plt.close(fig)
+        sys.exit(0)  # プログラムを終了
 
 if __name__ == "__main__":
     folder_path = path.PATH_OUTPUT
