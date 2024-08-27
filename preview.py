@@ -1,8 +1,8 @@
 import os
 import time
 import sys
-from PIL import Image
-import matplotlib.pyplot as plt
+import pygame
+from pygame.locals import QUIT, KEYDOWN, K_q
 from src.config import path
 
 def get_latest_image(folder_path):
@@ -12,41 +12,27 @@ def get_latest_image(folder_path):
     latest_file = max(files, key=os.path.getctime)
     return latest_file
 
-def display_image(ax, image_path):
-    img = Image.open(image_path)
-    img = img.resize((fig.canvas.get_width_height()), Image.ANTIALIAS)  # 画像をウィンドウサイズにスケーリング
-    ax.clear()  # 余白が残らないようにクリア
-    ax.imshow(img)
-    ax.axis('off')  # 軸を非表示
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)  # 余白を取り除く
-    plt.draw()
-    plt.pause(1/24)  # 1/24秒待機
+def display_image(screen, image_path):
+    img = pygame.image.load(image_path)
+    img = pygame.transform.scale(img, screen.get_size())  # 画像を画面サイズにスケーリング
+    screen.blit(img, (0, 0))
+    pygame.display.flip()
 
 def main(folder_path):
-    plt.ion()  # インタラクティブモードをオンにする
-    global fig, ax
-    fig, ax = plt.subplots()
-    mng = plt.get_current_fig_manager()
-    mng.full_screen_toggle()  # フルスクリーンモードにする
-
-    # 全てのツールバー、ウィンドウ枠、余白を非表示にする
-    fig.canvas.toolbar_visible = False
-    # fig.canvas.window().statusBar().setVisible(False)
-    # fig.canvas.window().menuBar().setVisible(False)
-    fig.canvas.header_visible = False
-    fig.canvas.footer_visible = False
-    fig.canvas.mpl_connect('key_press_event', on_key)
+    pygame.init()
+    info = pygame.display.Info()
+    screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
 
     while True:
+        for event in pygame.event.get():
+            if event.type == QUIT or (event.type == KEYDOWN and event.key == K_q):
+                pygame.quit()
+                sys.exit(0)
+
         latest_image = get_latest_image(folder_path)
         if latest_image:
-            display_image(ax, latest_image)
+            display_image(screen, latest_image)
         time.sleep(1/24)  # 1/24秒ごとに画像を更新
-
-def on_key(event):
-    if event.key == 'q':
-        plt.close(fig)
-        sys.exit(0)  # プログラムを終了
 
 if __name__ == "__main__":
     folder_path = path.PATH_OUTPUT
