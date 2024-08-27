@@ -6,6 +6,7 @@ import sys
 import os
 from PIL import ImageDraw, ImageFont, ImageEnhance
 import numpy as np
+import gc
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -44,83 +45,63 @@ class ImagenModel:
 
     def generate_image(self, prompt, index, lang='ja'):
         text_position = (self.caption_x, self.caption_y)
-        images = self.imagen.sample(texts=[prompt],
-                                    batch_size=1, return_pil_images=True)
-        image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
-        return self.add_caption(image, prompt, index, text_position, lang)
+        try:
+            print("Starting image sampling...")
+            images = self.imagen.sample(texts=[prompt], batch_size=1, return_pil_images=True)
+            print("Image sampling complete.")
+            image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
+            final_image = self.add_caption(image, prompt, index, text_position, lang)
+            gc.collect()  # メモリのクリーンアップ
+            return final_image
+        except Exception as e:
+            print(f"Error during image generation: {e}")
+            return None
 
     def add_caption(self, image, prompt, index, text_position, lang='ja'):
-        draw = ImageDraw.Draw(image)
+        try:
+            draw = ImageDraw.Draw(image)
+            font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
 
-        font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
+            # Brightness calculation and text color determination
+            grayscale_image = image.convert("L")
+            brightness = np.array(grayscale_image).mean()
+            text_color = "white" if brightness < 128 else "black"
 
-        if lang == 'ja':
-            font_prompt = ImageFont.truetype(self.font_path_ja, size=self.font_size)
-        else:
-            font_prompt = ImageFont.truetype(self.font_path_en, size=self.font_size)
+            # Image width calculation and index positioning
+            image_width, _ = image.size
+            third_of_width = image_width // 3
+            index_x = third_of_width // 2
+            index_position = (index_x, text_position[1])
 
-        # Calculate the brightness of the image
-        grayscale_image = image.convert("L")
-        brightness = np.array(grayscale_image).mean()
+            draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")
 
-        # Determine text color based on brightness
-        text_color = "white" if brightness < 128 else "black"
+            # Handle prompt text: split into two lines if necessary
+            max_width = image_width - text_position[0] - 20
+            words = list(prompt)
+            split_occurred = False
 
-        # Calculate the width of the image
-        image_width, _ = image.size
-        third_of_width = image_width // 3
+            for i in range(len(words)):
+                current_text = ''.join(words[:i + 1])
+                bbox = draw.textbbox((0, 0), current_text, font=font_prompt)
+                width = bbox[2] - bbox[0]
 
-        # Calculate the exact position for the index text to be centered in the leftmost third
-        index_x = third_of_width // 2  # Center position of the leftmost third
-        index_position = (index_x, text_position[1])
+                if width > max_width:
+                    split_occurred = True
+                    # Handle splitting and drawing two lines
+                    # Log the decision-making process
+                    print(f"Splitting text at position: {i}, current text: {current_text}")
+                    # Additional split and drawing logic
+                    break
 
-        # Add the index to the image, centered in the leftmost third
-        draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")  # 'mm' for middle alignment
+            if not split_occurred:
+                draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
 
-        # Handle prompt text: split into two lines if it exceeds width
-        max_width = image_width - text_position[0] - 20  # Leave some margin
-        words = list(prompt)
+            print("Caption added successfully.")
+            return image
+        except Exception as e:
+            print(f"Error adding caption: {e}")
+            return image  # エラー時にはキャプションなしの画像を返すか、適切な処理を追加
 
-        # Break into two lines if necessary
-        for i in range(len(words)):
-            current_text = ''.join(words[:i + 1])
-            bbox = draw.textbbox((0, 0), current_text, font=font_prompt)
-            width = bbox[2] - bbox[0]
-
-            if width > max_width:
-                # Try to split at a natural point
-                split_index = i
-                for j in range(i, max(0, i - 10), -1):
-                    if words[j] in ('、', '。', '　', ',', '.'):
-                        split_index = j + 1
-                        break
-                # Split the text
-                line1 = ''.join(words[:split_index])
-                line2 = ''.join(words[split_index:])
-
-                # If the second line is still too long, cut it as well
-                while True:
-                    bbox2 = draw.textbbox((0, 0), line2, font=font_prompt)
-                    width2 = bbox2[2] - bbox2[0]
-                    if width2 <= max_width:
-                        break
-                    for j in range(len(line2) - 1, max(0, len(line2) - 10), -1):
-                        if line2[j] in ('、', '。', '　', ',', '.'):
-                            split_index2 = j + 1
-                            line2 = line2[:split_index2]
-                            break
-                    else:
-                        line2 = line2[:max_width]
-
-                # Draw the two lines
-                draw.text(text_position, line1, fill=text_color, font=font_prompt, anchor="lm")
-                draw.text((text_position[0], text_position[1] + self.font_size), line2, fill=text_color, font=font_prompt, anchor="lm")
-                break
-        else:
-            # If the text fits in one line
-            draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
-
-        return image
 
 
 
