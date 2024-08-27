@@ -16,6 +16,7 @@ class ImagenModel:
         self.timesteps = timesteps
         self.font_path_ja = path.PATH_FONT_JA
         self.font_path_en = path.PATH_FONT_EN
+        self.font_path_idx = path.PATH_FONT_IDX
         self.caption_x = imagen_config.CAPTION_X
         self.caption_y = imagen_config.CAPTION_Y
         self.font_size = imagen_config.CAPTION_SIZE
@@ -51,10 +52,12 @@ class ImagenModel:
     def add_caption(self, image, prompt, index, text_position, lang='ja'):
         draw = ImageDraw.Draw(image)
 
+        font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
+
         if lang == 'ja':
-            font = ImageFont.truetype(self.font_path_ja, size=self.font_size)
+            font_prompt = ImageFont.truetype(self.font_path_ja, size=self.font_size)
         else:
-            font = ImageFont.truetype(self.font_path_en, size=self.font_size)
+            font_prompt = ImageFont.truetype(self.font_path_en, size=self.font_size)
 
         # Calculate the brightness of the image
         grayscale_image = image.convert("L")
@@ -72,11 +75,48 @@ class ImagenModel:
         index_position = (index_x, text_position[1])
 
         # Add the index to the image, centered in the leftmost third
-        draw.text(index_position, index, fill=text_color, font=font, anchor="mm")  # 'mm' for middle alignment
+        draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")  # 'mm' for middle alignment
 
-        # Add the prompt text to the image, left-aligned but vertically centered with the same anchor
-        prompt_position = (text_position[0], text_position[1])
-        draw.text(prompt_position, prompt, fill=text_color, font=font, anchor="lm")  # 'lm' for left-middle alignment
+        # Handle prompt text: split into two lines if it exceeds width
+        max_width = image_width - text_position[0] - 20  # Leave some margin
+        words = list(prompt)
+
+        # Break into two lines if necessary
+        for i in range(len(words)):
+            current_text = ''.join(words[:i + 1])
+            width, _ = draw.textsize(current_text, font=font_prompt)
+
+            if width > max_width:
+                # Try to split at a natural point
+                split_index = i
+                for j in range(i, max(0, i - 10), -1):
+                    if words[j] in ('、', '。', '　', ',', '.'):
+                        split_index = j + 1
+                        break
+                # Split the text
+                line1 = ''.join(words[:split_index])
+                line2 = ''.join(words[split_index:])
+
+                # If the second line is still too long, cut it as well
+                while True:
+                    width2, _ = draw.textsize(line2, font=font_prompt)
+                    if width2 <= max_width:
+                        break
+                    for j in range(len(line2) - 1, max(0, len(line2) - 10), -1):
+                        if line2[j] in ('、', '。', '　', ',', '.'):
+                            split_index2 = j + 1
+                            line2 = line2[:split_index2]
+                            break
+                    else:
+                        line2 = line2[:max_width]
+
+                # Draw the two lines
+                draw.text(text_position, line1, fill=text_color, font=font_prompt, anchor="lm")
+                draw.text((text_position[0], text_position[1] + self.font_size), line2, fill=text_color, font=font_prompt, anchor="lm")
+                break
+        else:
+            # If the text fits in one line
+            draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
 
         return image
 
