@@ -62,6 +62,11 @@ class ImagenModel:
             draw = ImageDraw.Draw(image)
             font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
 
+            if lang == 'ja':
+                font_prompt = self.font_path_ja
+            else:
+                font_prompt = self.font_path_en
+
             # Brightness calculation and text color determination
             grayscale_image = image.convert("L")
             brightness = np.array(grayscale_image).mean()
