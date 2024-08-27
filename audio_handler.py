@@ -75,10 +75,10 @@ class AudioEventHandler(FileSystemEventHandler):
     def get_next_index(self):
         current_index = f"{self.index_1}-{self.index_2}"
         self.index_2 += 1
-        if self.index_2 > 999:
+        if self.index_2 > 99:
             self.index_2 = 0
             self.index_1 += 1
-            if self.index_1 > 999:
+            if self.index_1 > 99:
                 self.index_1 = 0
         return current_index
 

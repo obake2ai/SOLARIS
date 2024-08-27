@@ -3,7 +3,7 @@ import time
 import sys
 import shutil
 import numpy as np
-from PIL import Image
+from PIL import Image, UnidentifiedImageError
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_q
 from src.config import path, imagen_config
@@ -15,9 +15,17 @@ def get_latest_image(folder_path):
     latest_file = max(files, key=os.path.getctime)
     return latest_file
 
+def safe_image_open(path, retries=5, delay=0.5):
+    for _ in range(retries):
+        try:
+            return Image.open(path)
+        except (OSError, UnidentifiedImageError):
+            time.sleep(delay)
+    raise OSError(f"Unable to open image file after {retries} retries: {path}")
+
 def blend_images(img1_path, img2_path, duration, fps):
-    img1 = np.asarray(Image.open(img1_path))
-    img2 = np.asarray(Image.open(img2_path))
+    img1 = np.asarray(safe_image_open(img1_path))
+    img2 = np.asarray(safe_image_open(img2_path))
 
     total_pixels = img1.shape[0] * img1.shape[1]
     num_frames = int(fps * duration)
@@ -57,7 +65,6 @@ def display_image(screen, image_array):
 def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//4, fps=24):
     pygame.init()
     info = pygame.display.Info()
-    # screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     screen = pygame.display.set_mode((info.current_w, info.current_h))
     pygame.display.set_caption("solaris")
     clock = pygame.time.Clock()
@@ -78,9 +85,8 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
-                    #clock.tick(fps)  # 指定されたfpsでスリープ
             else:
-                img = Image.open(new_image_path)
+                img = safe_image_open(new_image_path)
                 img = img.resize(screen.get_size(), Image.ANTIALIAS)
                 display_image(screen, np.asarray(img))
 
