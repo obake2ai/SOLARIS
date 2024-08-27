@@ -16,11 +16,8 @@ def get_latest_image(folder_path):
     return latest_file
 
 def blend_images(img1_path, img2_path, duration, fps):
-    img1 = Image.open(img1_path)
-    img2 = Image.open(img2_path)
-
-    img1 = np.array(img1)
-    img2 = np.array(img2)
+    img1 = np.asarray(Image.open(img1_path))
+    img2 = np.asarray(Image.open(img2_path))
 
     total_pixels = img1.shape[0] * img1.shape[1]
     num_frames = int(fps * duration)
@@ -90,5 +87,5 @@ def main(watch_folder, preview_folder, transition_duration=2, fps=24):
 
 if __name__ == "__main__":
     watch_folder = path.PATH_OUTPUT
-    preview_folder = path.PATH_PREVIEW 
+    preview_folder = path.PATH_PREVIEW
     main(watch_folder, preview_folder)
