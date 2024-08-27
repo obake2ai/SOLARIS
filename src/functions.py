@@ -84,7 +84,8 @@ class ImagenModel:
         # Break into two lines if necessary
         for i in range(len(words)):
             current_text = ''.join(words[:i + 1])
-            width, _ = draw.textsize(current_text, font=font_prompt)
+            bbox = draw.textbbox((0, 0), current_text, font=font_prompt)
+            width = bbox[2] - bbox[0]
 
             if width > max_width:
                 # Try to split at a natural point
@@ -99,7 +100,8 @@ class ImagenModel:
 
                 # If the second line is still too long, cut it as well
                 while True:
-                    width2, _ = draw.textsize(line2, font=font_prompt)
+                    bbox2 = draw.textbbox((0, 0), line2, font=font_prompt)
+                    width2 = bbox2[2] - bbox2[0]
                     if width2 <= max_width:
                         break
                     for j in range(len(line2) - 1, max(0, len(line2) - 10), -1):

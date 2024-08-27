@@ -39,7 +39,7 @@ def blend_images(img1_path, img2_path, duration, fps):
         flat_blended[current_indices] = flat_img2[current_indices]
         blended = flat_blended.reshape(img1.shape)
 
-        blended_images.append(blended.copy())  # コピーを保存して、変化を保持
+        blended_images.append(blended.copy()) 
 
     return blended_images
 
@@ -59,6 +59,7 @@ def main(watch_folder, preview_folder, transition_duration=2, fps=24):
     info = pygame.display.Info()
     # screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
     screen = pygame.display.set_mode((info.current_w, info.current_h))
+    pygame.display.set_caption("solaris")
     clock = pygame.time.Clock()
 
     previous_image = None
