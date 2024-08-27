@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_q
-from src.config import path
+from src.config import path, imagen_config
 
 def get_latest_image(folder_path):
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
