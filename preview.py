@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_q
-from src.config import path
+from src.config import path, imagen_config
 
 def get_latest_image(folder_path):
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
@@ -54,7 +54,7 @@ def display_image(screen, image_array):
     screen.blit(pygame_image, (0, 0))
     pygame.display.flip()
 
-def main(watch_folder, preview_folder, transition_duration=2, fps=24):
+def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL, fps=24):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
