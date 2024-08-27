@@ -31,8 +31,8 @@ def main(folder_path):
 
     # 全てのツールバー、ウィンドウ枠、余白を非表示にする
     fig.canvas.toolbar_visible = False
-    fig.canvas.window().statusBar().setVisible(False)
-    fig.canvas.window().menuBar().setVisible(False)
+    # fig.canvas.window().statusBar().setVisible(False)
+    # fig.canvas.window().menuBar().setVisible(False)
     fig.canvas.header_visible = False
     fig.canvas.footer_visible = False
     fig.canvas.mpl_connect('key_press_event', on_key)
