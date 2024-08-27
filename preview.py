@@ -79,7 +79,7 @@ def main(watch_folder, preview_folder, transition_duration=2, fps=24):
             else:
                 img = Image.open(new_image_path)
                 img = img.resize(screen.get_size(), Image.ANTIALIAS)
-                display_image(screen, np.array(img))
+                display_image(screen, np.asarray(img))
 
             previous_image = new_image_path
 
