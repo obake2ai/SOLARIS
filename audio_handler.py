@@ -5,6 +5,7 @@ from watchdog.events import FileSystemEventHandler
 from src.config import path, imagen_config
 from src import functions
 from datetime import datetime
+import threading
 
 class AudioEventHandler(FileSystemEventHandler):
     def __init__(self, folder_path):
@@ -26,25 +27,27 @@ class AudioEventHandler(FileSystemEventHandler):
         print("Initial setup complete...Waiting for audio input...")
 
     def on_created(self, event):
+        print(f"on_created called for: {event.src_path}")
         if event.is_directory:
             return
         if event.src_path.endswith(".mp3"):
             print(f"New Audio file created: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
                 detected_text, detected_language = self.start_whisper(event.src_path)
-                print((f"Detected text: {detected_text}"))
+                print(f"Detected text: {detected_text}")
                 self.start_imagen(detected_text, detected_language)
             else:
                 print("File creation did not stabilize within timeout.")
 
     def on_modified(self, event):
+        print(f"on_modified called for: {event.src_path}")
         if event.is_directory:
             return
         if event.src_path.endswith(".mp3"):
             print(f"Updated Audio file: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
                 detected_text, detected_language = self.start_whisper(event.src_path)
-                print((f"Detected text: {detected_text}"))
+                print(f"Detected text: {detected_text}")
                 self.start_imagen(detected_text, detected_language)
             else:
                 print("File modification did not stabilize within timeout.")
@@ -88,11 +91,25 @@ class AudioEventHandler(FileSystemEventHandler):
 
         return False
 
+def monitor_observer(observer):
+    while True:
+        if not observer.is_alive():
+            print("Observer stopped, restarting...")
+            observer.stop()
+            observer.join()
+            observer.start()
+        time.sleep(5)
+
 def watch_folder(folder_path):
     event_handler = AudioEventHandler(folder_path)
     observer = Observer()
     observer.schedule(event_handler, folder_path, recursive=True)
     observer.start()
+
+    observer_thread = threading.Thread(target=monitor_observer, args=(observer,))
+    observer_thread.daemon = True
+    observer_thread.start()
+
     try:
         while True:
             time.sleep(1)
