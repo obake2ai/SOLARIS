@@ -3,7 +3,6 @@ import time
 import sys
 from PIL import Image
 import matplotlib.pyplot as plt
-from matplotlib import rcParams
 from src.config import path
 
 def get_latest_image(folder_path):
@@ -29,9 +28,13 @@ def main(folder_path):
     fig, ax = plt.subplots()
     mng = plt.get_current_fig_manager()
     mng.full_screen_toggle()  # フルスクリーンモードにする
-    fig.canvas.toolbar_visible = False  # ツールバーを非表示
-    fig.canvas.header_visible = False  # ヘッダーを非表示
-    fig.canvas.footer_visible = False  # フッターを非表示
+
+    # 全てのツールバー、ウィンドウ枠、余白を非表示にする
+    fig.canvas.toolbar_visible = False
+    fig.canvas.window().statusBar().setVisible(False)
+    fig.canvas.window().menuBar().setVisible(False)
+    fig.canvas.header_visible = False
+    fig.canvas.footer_visible = False
     fig.canvas.mpl_connect('key_press_event', on_key)
 
     while True:
