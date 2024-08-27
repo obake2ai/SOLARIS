@@ -79,27 +79,7 @@ class ImagenModel:
             index_position = (index_x, text_position[1])
 
             draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")
-
-            # Handle prompt text: split into two lines if necessary
-            max_width = image_width - text_position[0] - 20
-            words = list(prompt)
-            split_occurred = False
-
-            for i in range(len(words)):
-                current_text = ''.join(words[:i + 1])
-                bbox = draw.textbbox((0, 0), current_text, font=font_prompt)
-                width = bbox[2] - bbox[0]
-
-                if width > max_width:
-                    split_occurred = True
-                    # Handle splitting and drawing two lines
-                    # Log the decision-making process
-                    print(f"Splitting text at position: {i}, current text: {current_text}")
-                    # Additional split and drawing logic
-                    break
-
-            if not split_occurred:
-                draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
+            draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
 
             print("Caption added successfully.")
             return image
