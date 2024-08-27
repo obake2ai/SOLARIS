@@ -70,7 +70,7 @@ class ImagenModel:
             # Brightness calculation and text color determination
             grayscale_image = image.convert("L")
             brightness = np.array(grayscale_image).mean()
-            text_color = "white" if brightness < 128 else "black"
+            text_color = "white" if brightness < 64 else "black"
 
             # Image width calculation and index positioning
             image_width, _ = image.size
