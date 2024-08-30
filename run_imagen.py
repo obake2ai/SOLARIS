@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 
-def process_audio(audio_path, whisper_model, imagen_model, output_path):
+def run_imagen(audio_path, whisper_model, imagen_model, output_path):
     # Transcribe audio to text
     transcribe_text, detected_language = whisper_model.transcribe_audio2text(audio_path)
     print(f"Detected text: {transcribe_text}")
