@@ -79,7 +79,26 @@ class ImagenModel:
             index_position = (index_x, text_position[1])
 
             draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")
-            draw.text(text_position, prompt, fill=text_color, font=font_prompt, anchor="lm")
+            
+            # Calculate the width of the prompt text and wrap if necessary
+            max_text_width = image_width - text_position[0] - 10  # Leave some padding
+            lines = []
+            current_line = ""
+            for word in prompt.split():
+                test_line = current_line + " " + word if current_line else word
+                line_width, _ = draw.textsize(test_line, font=font_prompt)
+                if line_width <= max_text_width:
+                    current_line = test_line
+                else:
+                    lines.append(current_line)
+                    current_line = word
+            lines.append(current_line)
+
+            # Adjust text position for multiline prompt
+            y_offset = text_position[1]
+            for line in lines:
+                draw.text((text_position[0], y_offset), line, fill=text_color, font=font_prompt, anchor="lm")
+                y_offset += self.font_size + 5  # Move down for next line with some spacing
 
             print("Caption added successfully.")
             return image
