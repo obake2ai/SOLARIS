@@ -5,7 +5,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from src.config import path, imagen_config
 from src import functions
-from run_imagen import process_audio  # Import the function directly
+from run_imagen import run_imagen  # Import the function directly
 
 class AudioEventHandler(FileSystemEventHandler):
     def __init__(self, folder_path, whisper_model, imagen_model):
