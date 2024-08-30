@@ -79,14 +79,15 @@ class ImagenModel:
             index_position = (index_x, text_position[1])
 
             draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")
-            
+
             # Calculate the width of the prompt text and wrap if necessary
             max_text_width = image_width - text_position[0] - 10  # Leave some padding
             lines = []
             current_line = ""
             for word in prompt.split():
                 test_line = current_line + " " + word if current_line else word
-                line_width, _ = draw.textsize(test_line, font=font_prompt)
+                bbox = draw.textbbox((0, 0), test_line, font=font_prompt)
+                line_width = bbox[2] - bbox[0]
                 if line_width <= max_text_width:
                     current_line = test_line
                 else:
