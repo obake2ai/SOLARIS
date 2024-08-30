@@ -1,17 +1,7 @@
-import os
 from datetime import datetime
-from src.config import path, imagen_config
-from src import functions
+import os
 
-def process_audio(audio_path):
-    # Initialize models
-    whisper_model = functions.WhisperModel()
-    imagen_model = functions.ImagenModel(
-        checkpoint_path=path.PATH_IMAGEN,
-        image_size=imagen_config.SIZE_IMAGEN,
-        timesteps=imagen_config.TIMESTEPS_IMAGEN
-    )
-
+def process_audio(audio_path, whisper_model, imagen_model, output_path):
     # Transcribe audio to text
     transcribe_text, detected_language = whisper_model.transcribe_audio2text(audio_path)
     print(f"Detected text: {transcribe_text}")
@@ -21,7 +11,7 @@ def process_audio(audio_path):
     try:
         generated_image = imagen_model.generate_image(transcribe_text, index, detected_language)
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-        output_filename = f"{path.PATH_OUTPUT}/imagen_output_{timestamp}_{index}.png"
+        output_filename = f"{output_path}/imagen_output_{timestamp}_{index}.png"
         print(f"Saving image to {output_filename}")
         generated_image.save(output_filename)
         print(f"Imagen saved: {output_filename}")
