@@ -125,7 +125,7 @@ class WhisperModel:
             # transcribeメソッドにオプションを追加して感度を調整
             segments, info = self.whisper.transcribe(
                 audio_file,
-                beam_size=1,  # デフォルトのビームサイズ（1に設定）
+                beam_size=5,  # デフォルトのビームサイズ（1に設定）
                 word_timestamps=True,  # 単語ごとのタイムスタンプを有効に
                 condition_on_previous_text=False  # 前のテキストに依存しない
             )
