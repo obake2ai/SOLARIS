@@ -73,6 +73,8 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
     previous_image = None
     running = True
     while running:
+        pygame.event.pump()  # イベントをポーリングして「応答なし」を防止する
+
         for event in pygame.event.get():
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_q):
                 running = False
