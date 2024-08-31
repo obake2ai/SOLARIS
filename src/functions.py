@@ -128,6 +128,10 @@ class WhisperModel:
                 beam_size=5,  # デフォルトのビームサイズ（1に設定）
                 word_timestamps=True,  # 単語ごとのタイムスタンプを有効に
                 condition_on_previous_text=False  # 前のテキストに依存しない
+                temperature=0.9,  # 温度を少し高めに設定
+                compression_ratio_threshold=5.0,  # 圧縮率の閾値を高く設定
+                log_prob_threshold=-1.0,  # ログ確率の閾値を下げる
+                no_speech_threshold=0.2  # 無音閾値を下げる
             )
             detected_list = []
             for segment in segments:
