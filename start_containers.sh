@@ -13,4 +13,4 @@ gnome-terminal -- bash -c "docker exec -it solaris02 ls; exec bash"
 gnome-terminal -- bash -c "docker exec -it solaris02 pwd; exec bash"
 
 # ターミナル4: docker exec -it solaris02 du
-gnome-terminal -- bash -c "docker exec -it solaris02 du; exec bash"
+gnome-terminal -- bash -c "docker exec -it solaris02 watch -n 1 nvidia-smi; exec bash"
