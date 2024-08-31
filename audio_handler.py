@@ -3,7 +3,7 @@ import os
 import threading
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from src.config import path, imagen_config
+from config import path, imagen_config
 from src import functions
 from run_imagen import run_imagen  # Import the function directly
 
