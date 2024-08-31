@@ -37,7 +37,7 @@ class ImagenModel:
 
     def load_imagen(self):
         unet = Unet(
-            dim=self.input_channels,
+            dim=128,
             dim_mults=(1, 2, 4, 8),
             num_resnet_blocks=1,
             layer_attns=(False, False, False, True),
