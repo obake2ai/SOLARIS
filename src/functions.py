@@ -7,6 +7,7 @@ import os
 from PIL import ImageDraw, ImageFont, ImageEnhance
 import numpy as np
 import gc
+import torch.backends.cudnn as cudnn
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -21,7 +22,14 @@ class ImagenModel:
         self.caption_x = imagen_config.CAPTION_X
         self.caption_y = imagen_config.CAPTION_Y
         self.font_size = imagen_config.CAPTION_SIZE
+
+        # フォントの事前ロード
+        self.font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
+        self.font_ja = ImageFont.truetype(self.font_path_ja, size=self.font_size)
+        self.font_en = ImageFont.truetype(self.font_path_en, size=self.font_size)
+
         self.imagen = self.load_imagen()
+        cudnn.benchmark = True  # GPU最適化
 
     def load_imagen(self):
         unet = Unet(
@@ -33,7 +41,7 @@ class ImagenModel:
         )
 
         imagen = Imagen(
-            condition_on_text=False,  # this must be set to False for unconditional Imagen
+            condition_on_text=False,
             unets=unet,
             image_sizes=self.image_size,
             timesteps=self.timesteps
@@ -51,7 +59,6 @@ class ImagenModel:
             print("Image sampling complete.")
             image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
             final_image = self.add_caption(image, prompt, index, text_position, lang)
-            gc.collect()  # メモリのクリーンアップ
             return final_image
         except Exception as e:
             print(f"Error during image generation: {e}")
@@ -60,52 +67,51 @@ class ImagenModel:
     def add_caption(self, image, prompt, index, text_position, lang='ja'):
         try:
             draw = ImageDraw.Draw(image)
-            font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
+            font_prompt = self.font_ja if lang == 'ja' else self.font_en
 
-            if lang == 'ja':
-                font_prompt = ImageFont.truetype(self.font_path_ja, size=self.font_size)
-            else:
-                font_prompt = ImageFont.truetype(self.font_path_en, size=self.font_size)
-
-            # Brightness calculation and text color determination
+            # 明るさ計算とテキスト色の決定
             grayscale_image = image.convert("L")
             brightness = np.array(grayscale_image).mean()
             text_color = "white" if brightness < 64 else "black"
 
-            # Image width calculation and index positioning
+            # インデックスの描画
             image_width, _ = image.size
             third_of_width = image_width // 3
             index_x = third_of_width // 2
             index_position = (index_x, text_position[1])
+            draw.text(index_position, index, fill=text_color, font=self.font_idx, anchor="mm")
 
-            draw.text(index_position, index, fill=text_color, font=font_idx, anchor="mm")
-
-            # Calculate the width of the prompt text and wrap if necessary
-            max_text_width = image_width - text_position[0] - 10  # Leave some padding
-            lines = []
-            current_line = ""
-            for word in prompt.split():
-                test_line = current_line + " " + word if current_line else word
-                bbox = draw.textbbox((0, 0), test_line, font=font_prompt)
-                line_width = bbox[2] - bbox[0]
-                if line_width <= max_text_width:
-                    current_line = test_line
-                else:
-                    lines.append(current_line)
-                    current_line = word
-            lines.append(current_line)
-
-            # Adjust text position for multiline prompt
+            # テキストの描画
+            max_text_width = image_width - text_position[0] - 10
+            lines = self.wrap_text(draw, prompt, font_prompt, max_text_width)
             y_offset = text_position[1]
+
             for line in lines:
                 draw.text((text_position[0], y_offset), line, fill=text_color, font=font_prompt, anchor="lm")
-                y_offset += self.font_size + 5  # Move down for next line with some spacing
+                y_offset += self.font_size + 5
 
             print("Caption added successfully.")
             return image
         except Exception as e:
             print(f"Error adding caption: {e}")
             return image
+
+    def wrap_text(self, draw, text, font, max_width):
+        lines = []
+        current_line = ""
+
+        for word in text.split():
+            test_line = current_line + " " + word if current_line else word
+            bbox = draw.textbbox((0, 0), test_line, font=font)
+            line_width = bbox[2] - bbox[0]
+            if line_width <= max_width:
+                current_line = test_line
+            else:
+                lines.append(current_line)
+                current_line = word
+        lines.append(current_line)
+
+        return lines
 
 class WhisperModel:
     def __init__(self):
