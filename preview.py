@@ -14,15 +14,7 @@ def get_latest_image(folder_path):
         return None
     latest_file = max(files, key=os.path.getctime)
     return latest_file
-
-def safe_image_open(path, retries=5, delay=0.5):
-    for _ in range(retries):
-        try:
-            return Image.open(path)
-        except (OSError, UnidentifiedImageError):
-            time.sleep(delay)
-    raise OSError(f"Unable to open image file after {retries} retries: {path}")
-
+    
 def blend_images(img1_path, img2_path, duration, fps):
     img1 = np.asarray(safe_image_open(img1_path))
     img2 = np.asarray(safe_image_open(img2_path))
@@ -62,6 +54,15 @@ def display_image(screen, image_array):
     screen.blit(pygame_image, (0, 0))
     pygame.display.flip()
 
+def safe_image_open(path, retries=5, delay=0.5):
+    for _ in range(retries):
+        try:
+            return Image.open(path)
+        except (OSError, UnidentifiedImageError):
+            time.sleep(delay)
+    print(f"Warning: Unable to open image file after {retries} retries: {path}")
+    return None
+
 def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//4, fps=24):
     pygame.init()
     info = pygame.display.Info()
@@ -82,11 +83,18 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
             shutil.copy(latest_image_path, new_image_path)
 
             if previous_image:
+                img1 = safe_image_open(previous_image)
+                img2 = safe_image_open(new_image_path)
+                if img1 is None or img2 is None:
+                    previous_image = new_image_path
+                    continue  # 画像が読み込めなければ次のループに進む
                 transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
             else:
                 img = safe_image_open(new_image_path)
+                if img is None:
+                    continue  # 画像が読み込めなければ次のループに進む
                 img = img.resize(screen.get_size(), Image.ANTIALIAS)
                 display_image(screen, np.asarray(img))
 
@@ -96,7 +104,6 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
 
     pygame.quit()
     sys.exit(0)
-
 if __name__ == "__main__":
     watch_folder = path.PATH_OUTPUT
     preview_folder = path.PATH_PREVIEW
