@@ -78,11 +78,20 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 running = False
 
         latest_image_path = get_latest_image(watch_folder)
-        if latest_image_path and (previous_image is None or latest_image_path != previous_image):
+        if latest_image_path:
             new_image_path = os.path.join(preview_folder, os.path.basename(latest_image_path))
-            shutil.copy(latest_image_path, new_image_path)
 
-            if previous_image:
+            # 初回は単に画像を設定し、アニメーションは行わない
+            if previous_image is None:
+                shutil.copy(latest_image_path, new_image_path)
+                img = safe_image_open(new_image_path)
+                if img is None:
+                    continue  # 画像が読み込めなければ次のループに進む
+                img = img.resize(screen.get_size(), Image.ANTIALIAS)
+                display_image(screen, np.asarray(img))
+                previous_image = new_image_path
+            elif latest_image_path != previous_image:
+                shutil.copy(latest_image_path, new_image_path)
                 img1 = safe_image_open(previous_image)
                 img2 = safe_image_open(new_image_path)
                 if img1 is None or img2 is None:
@@ -91,19 +100,14 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
-            else:
-                img = safe_image_open(new_image_path)
-                if img is None:
-                    continue  # 画像が読み込めなければ次のループに進む
-                img = img.resize(screen.get_size(), Image.ANTIALIAS)
-                display_image(screen, np.asarray(img))
-
-            previous_image = new_image_path
+                # アニメーションが完了したら previous_image を更新
+                previous_image = new_image_path
 
         clock.tick(fps // 2)  # メインループを適度な速さで回す
 
     pygame.quit()
     sys.exit(0)
+
 if __name__ == "__main__":
     watch_folder = path.PATH_OUTPUT
     preview_folder = path.PATH_PREVIEW
