@@ -1,13 +1,12 @@
 from datetime import datetime
 import os
 
-def run_imagen(audio_path, whisper_model, imagen_model, output_path):
-    # Transcribe audio to text
+def run_imagen(audio_path, whisper_model, imagen_model, output_path, index):
+    # 音声をテキストに変換
     transcribe_text, detected_language = whisper_model.transcribe_audio2text(audio_path)
     print(f"Detected text: {transcribe_text}")
 
-    # Generate image
-    index = "0-0"  # Placeholder for index
+    # 画像生成
     try:
         generated_image = imagen_model.generate_image(transcribe_text, index, detected_language)
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -18,11 +17,3 @@ def run_imagen(audio_path, whisper_model, imagen_model, output_path):
         os.chmod(output_filename, 0o666)
     except Exception as e:
         print(f"Error saving image: {e}")
-
-if __name__ == "__main__":
-    import sys
-    if len(sys.argv) > 1:
-        audio_file_path = sys.argv[1]
-        process_audio(audio_file_path)
-    else:
-        print("No audio file path provided.")
