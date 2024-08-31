@@ -20,7 +20,14 @@ def record_audio(duration, tmp_filename):
 
     print(f"[{datetime.now()}] Recording audio for {duration} seconds to {tmp_filename}...")
 
-    subprocess.run(command, check=True)
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as e:
+        if "Device or resource busy" in str(e):
+            print(f"[{datetime.now()}] Device is busy, skipping this interval.")
+            return None
+        else:
+            raise
 
     # 音声ファイルを読み込み
     audio = AudioSegment.from_wav(wav_filename)
@@ -50,14 +57,31 @@ def delete_old_files(folder, limit=100):
             os.remove(file)
             print(f"[{datetime.now()}] Deleted old file {file}")
 
+def resolve_busy_device():
+    # ビジー状態を解決するための処理を追加します
+    print(f"[{datetime.now()}] Resolving device busy state...")
+    # 例: デバイスのリセットや他のプロセスの終了
+    # os.system("sudo fuser -k /dev/snd/*")  # 他のプロセスを強制終了するコマンド
+
 def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix):
     counter = 0
+    skip_count = 0  # スキップ回数をカウント
+
     while True:
         counter += 1
         tmp_filename = os.path.join(tmp_folder, f"{file_prefix}")
         output_filename = os.path.join(output_folder, f"{file_prefix}_{str(counter).zfill(6)}.mp3")
 
         tmp_mp3_filename = record_audio(duration, tmp_filename)
+
+        if tmp_mp3_filename is None:
+            skip_count += 1
+            if skip_count >= 2:
+                resolve_busy_device()
+            time.sleep(interval)
+            continue
+        else:
+            skip_count = 0  # 成功した場合スキップカウントをリセット
 
         move_to_output(tmp_mp3_filename, output_filename)
         os.chmod(output_filename, 0o666)
