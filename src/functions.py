@@ -193,10 +193,11 @@ def test_whisper():
 
     model = WhisperModel()
     transcribe_text = model.transcribe_audio2text(whisper_config['PATH_AUDIOFILE'])
-    check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
-    with open(check_txtfile, 'w') as f:
-        f.write(transcribe_text)
-    return transcribe_text
+    print (f"detected text: {transcribe_text}")
+    # check_txtfile = f"{whisper_config['PATH_OUTPUT']}/sample.txt"
+    # with open(check_txtfile, 'w') as f:
+    #     f.write(transcribe_text)
+    # return transcribe_text
 
 def test_whisper_imagen():
     transcribe_text = test_whisper()
