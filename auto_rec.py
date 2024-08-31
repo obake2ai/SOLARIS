@@ -1,4 +1,4 @@
-from src.config import path, imagen_config
+from config import path, imagen_config
 from pydub import AudioSegment
 import subprocess
 import os

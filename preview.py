@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image, UnidentifiedImageError
 import pygame
 from pygame.locals import QUIT, KEYDOWN, K_q
-from src.config import path, imagen_config
+from config import path, imagen_config
 
 def get_latest_image(folder_path):
     files = [os.path.join(folder_path, f) for f in os.listdir(folder_path) if f.endswith(('.png', '.jpg', '.jpeg', '.bmp', '.gif'))]
@@ -14,7 +14,7 @@ def get_latest_image(folder_path):
         return None
     latest_file = max(files, key=os.path.getctime)
     return latest_file
-    
+
 def blend_images(img1_path, img2_path, duration, fps):
     img1 = np.asarray(safe_image_open(img1_path))
     img2 = np.asarray(safe_image_open(img2_path))
