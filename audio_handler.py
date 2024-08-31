@@ -22,7 +22,7 @@ class AudioEventHandler(FileSystemEventHandler):
         print(f"on_created called for: {event.src_path}")
         if event.is_directory:
             return
-        if event.src_path.endswith(".mp3", ".wav"):
+        if event.src_path.endswith((".mp3", ".wav")):
             print(f"New Audio file created: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
                 self.process_file(event.src_path)
@@ -33,7 +33,7 @@ class AudioEventHandler(FileSystemEventHandler):
         print(f"on_modified called for: {event.src_path}")
         if event.is_directory:
             return
-        if event.src_path.endswith(".mp3", ".wav"):
+        if event.src_path.endswith((".mp3", ".wav")):
             print(f"Updated Audio file: {event.src_path}")
             if self.wait_for_file_creation(event.src_path):
                 self.process_file(event.src_path)
