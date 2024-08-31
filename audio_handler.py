@@ -42,8 +42,8 @@ class AudioEventHandler(FileSystemEventHandler):
     def process_file(self, audio_path):
         try:
             # Use the loaded models to process audio and generate image
-            output_filename = f"{self.index_1}-{self.index_2}.png"  # 生成する画像のファイル名を設定
-            run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_filename)
+            output_index = f"{self.index_1}-{self.index_2}"  # 生成する画像のファイル名を設定
+            run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_index)
             self.update_indices()  # インデックスを更新
         except Exception as e:
             print(f"Error processing audio file: {e}")
