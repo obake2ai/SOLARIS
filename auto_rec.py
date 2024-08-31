@@ -8,28 +8,39 @@ from datetime import datetime
 
 def record_audio(duration, tmp_filename):
     wav_filename = tmp_filename + '.wav'
-    command = [
-        'arecord',
-        '-D', 'hw:1,0',  # デバイスIDを指定
-        '-f', 'cd',  # フォーマット：16-bit little-endian, 44100Hz, ステレオ
-        '-t', 'wav',
-        '-c', '2',  # チャンネル数を2に変更
-        '-d', str(duration),  # 録音時間
-        wav_filename
-    ]
+    channels = 1  # 初期設定は1チャンネル（モノラル）
+    device_name = 'plughw:CARD=Microphone,DEV=0'  # 例：USBマイクの設定
 
-    print(f"[{datetime.now()}] Recording audio for {duration} seconds to {tmp_filename}...")
+    while True:
+        command = [
+            'arecord',
+            '-D', device_name,  # デバイス名を設定
+            '-f', 'cd',  # フォーマット：16-bit little-endian, 44100Hz, ステレオ
+            '-t', 'wav',
+            '-c', str(channels),  # チャンネル数
+            '-d', str(duration),  # 録音時間
+            wav_filename
+        ]
 
-    try:
-        subprocess.run(command, check=True)
-    except subprocess.CalledProcessError as e:
-        if "Device or resource busy" in str(e):
-            print(f"[{datetime.now()}] Device is busy, skipping this interval.")
-        elif "Channels count non available" in str(e):
-            print(f"[{datetime.now()}] Channel count not available for this device.")
-        else:
-            print(f"[{datetime.now()}] An error occurred: {e}")
-        return None
+        print(f"[{datetime.now()}] Recording audio for {duration} seconds to {tmp_filename} with {channels} channel(s) using {device_name}...")
+
+        try:
+            subprocess.run(command, check=True)
+            break  # 録音成功時はループを抜ける
+        except subprocess.CalledProcessError as e:
+            if "Device or resource busy" in str(e):
+                print(f"[{datetime.now()}] Device is busy, skipping this interval.")
+                return None
+            elif "Channels count non available" in str(e):
+                print(f"[{datetime.now()}] Channel count not available for this device. Trying with different channel count.")
+                if channels == 1:
+                    channels = 2  # モノラルがダメならステレオを試す
+                else:
+                    print(f"[{datetime.now()}] No suitable channel count available. Skipping this interval.")
+                    return None
+            else:
+                print(f"[{datetime.now()}] An error occurred: {e}")
+                return None
 
     # 音声ファイルを読み込み
     audio = AudioSegment.from_wav(wav_filename)
