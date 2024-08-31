@@ -1,7 +1,7 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
 from .config import path, imagen_config
-from faster_whisper import WhisperModel as WMModel
+from faster_whisper import WhisperModel as FWModel
 import sys
 import os
 from PIL import ImageDraw, ImageFont, ImageEnhance
