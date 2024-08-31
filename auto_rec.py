@@ -13,7 +13,7 @@ def record_audio(duration, tmp_filename):
         '-D', 'hw:1,0',  # デバイスIDを指定
         '-f', 'cd',  # フォーマット：16-bit little-endian, 44100Hz, ステレオ
         '-t', 'wav',
-        '-c', '1',
+        '-c', '2',  # チャンネル数を2に変更
         '-d', str(duration),  # 録音時間
         wav_filename
     ]
@@ -25,10 +25,11 @@ def record_audio(duration, tmp_filename):
     except subprocess.CalledProcessError as e:
         if "Device or resource busy" in str(e):
             print(f"[{datetime.now()}] Device is busy, skipping this interval.")
-            return None
+        elif "Channels count non available" in str(e):
+            print(f"[{datetime.now()}] Channel count not available for this device.")
         else:
             print(f"[{datetime.now()}] An error occurred: {e}")
-            return None
+        return None
 
     # 音声ファイルを読み込み
     audio = AudioSegment.from_wav(wav_filename)
@@ -59,10 +60,9 @@ def delete_old_files(folder, limit=100):
             print(f"[{datetime.now()}] Deleted old file {file}")
 
 def resolve_busy_device():
-    # ビジー状態を解決するための処理を追加します
     print(f"[{datetime.now()}] Resolving device busy state...")
     # 例: デバイスのリセットや他のプロセスの終了
-    # os.system("sudo fuser -k /dev/snd/*")  # 他のプロセスを強制終了するコマンド
+    # os.system("sudo fuser -k /dev/snd/*")
 
 def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix):
     counter = 0
