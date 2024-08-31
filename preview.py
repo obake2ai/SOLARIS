@@ -57,11 +57,19 @@ def display_image(screen, image_array):
 def safe_image_open(path, retries=5, delay=0.5):
     for _ in range(retries):
         try:
-            return Image.open(path)
+            img = Image.open(path)
+            img.verify()  # 画像が破損していないか検証する
+            img = Image.open(path)  # .verify() の後は再度 .open() が必要
+            img.load()  # 画像の完全な読み込みを試みる
+
+            # 画像のサイズが正しいか確認する
+            if img.size == (0, 0):
+                raise OSError("image file is truncated or corrupted")
+
+            return img
         except (OSError, UnidentifiedImageError):
             time.sleep(delay)
-    print(f"Warning: Unable to open image file after {retries} retries: {path}")
-    return None
+            continue  # 読み込みに失敗した場合、リトライする
 
 def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL // 4, fps=24):
     pygame.init()
@@ -83,7 +91,6 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
         if latest_image_path:
             new_image_path = os.path.join(preview_folder, os.path.basename(latest_image_path))
 
-            # 初回は単に画像を設定し、アニメーションは行わない
             if previous_image is None:
                 shutil.copy(latest_image_path, new_image_path)
                 img = safe_image_open(new_image_path)
@@ -102,7 +109,6 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 transition_images = blend_images(previous_image, new_image_path, transition_duration, fps)
                 for blended_img in transition_images:
                     display_image(screen, blended_img)
-                # アニメーションが完了したら previous_image を更新
                 previous_image = new_image_path
 
         clock.tick(fps)  # メインループを適度な速さで回す
