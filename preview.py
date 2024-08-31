@@ -63,7 +63,7 @@ def safe_image_open(path, retries=5, delay=0.5):
     print(f"Warning: Unable to open image file after {retries} retries: {path}")
     return None
 
-def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL//4, fps=24):
+def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL // 4, fps=24):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h))
@@ -103,7 +103,7 @@ def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_I
                 # アニメーションが完了したら previous_image を更新
                 previous_image = new_image_path
 
-        clock.tick(fps // 2)  # メインループを適度な速さで回す
+        clock.tick(fps)  # メインループを適度な速さで回す
 
     pygame.quit()
     sys.exit(0)
