@@ -15,6 +15,7 @@ class AudioEventHandler(FileSystemEventHandler):
         self.index_1 = 0
         self.index_2 = 0
         self.output_path = path.PATH_OUTPUT
+        self.last_processed_file = None  # 最新の処理済みファイルを追跡
         print("Initial setup complete...Waiting for audio input...")
 
     def on_created(self, event):
@@ -40,13 +41,18 @@ class AudioEventHandler(FileSystemEventHandler):
                 print("File modification did not stabilize within timeout.")
 
     def process_file(self, audio_path):
-        try:
-            # Use the loaded models to process audio and generate image
-            output_index = f"{self.index_1}-{self.index_2}"  # 生成する画像のファイル名を設定
-            run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_index)
-            self.update_indices()  # インデックスを更新
-        except Exception as e:
-            print(f"Error processing audio file: {e}")
+        # ファイルが以前に処理されたものと異なる場合のみ処理を行う
+        if self.last_processed_file != audio_path:
+            try:
+                # Use the loaded models to process audio and generate image
+                output_index = f"{self.index_1}-{self.index_2}"  # 生成する画像のファイル名を設定
+                run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_index)
+                self.last_processed_file = audio_path  # 現在のファイル名を記憶
+                self.update_indices()  # インデックスを更新
+            except Exception as e:
+                print(f"Error processing audio file: {e}")
+        else:
+            print(f"Skipping file {audio_path} as it is already processed.")
 
     def update_indices(self):
         # インデックスを更新するロジック
