@@ -8,6 +8,7 @@ from PIL import ImageDraw, ImageFont, ImageEnhance
 import numpy as np
 import gc
 import torch.backends.cudnn as cudnn
+from torch.nn import DataParallel
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -28,6 +29,7 @@ class ImagenModel:
         self.font_ja = ImageFont.truetype(self.font_path_ja, size=self.font_size)
         self.font_en = ImageFont.truetype(self.font_path_en, size=self.font_size)
 
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.imagen = self.load_imagen()
         cudnn.benchmark = True  # GPU最適化
 
@@ -49,13 +51,22 @@ class ImagenModel:
 
         checkpoint = torch.load(self.checkpoint_path)
         imagen.load_state_dict(checkpoint['model'])
+        imagen.to(self.device)
+
+        # DataParallelでモデルを複数のGPUに対応
+        if torch.cuda.device_count() > 1:
+            print(f"Using {torch.cuda.device_count()} GPUs for parallel processing.")
+            imagen = DataParallel(imagen)
+
         return imagen
 
     def generate_image(self, prompt, index, lang='ja'):
         text_position = (self.caption_x, self.caption_y)
         try:
             print("Starting image sampling...")
-            images = self.imagen.sample(texts=[prompt], batch_size=1, return_pil_images=True)
+            self.imagen.eval()  # モデルを推論モードにする
+            with torch.no_grad():
+                images = self.imagen.module.sample(texts=[prompt], batch_size=1, return_pil_images=True) if isinstance(self.imagen, DataParallel) else self.imagen.sample(texts=[prompt], batch_size=1, return_pil_images=True)
             print("Image sampling complete.")
             image = images[0].resize((imagen_config.RESIZE_WIDTH, imagen_config.RESIZE_HEIGHT))
             final_image = self.add_caption(image, prompt, index, text_position, lang)
