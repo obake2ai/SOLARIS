@@ -24,6 +24,8 @@ class ImagenModel:
         self.caption_y = imagen_config.CAPTION_Y
         self.font_size = imagen_config.CAPTION_SIZE
 
+        self.input_channels = imagen_config.INPUT_CHANNELS
+
         # フォントの事前ロード
         self.font_idx = ImageFont.truetype(self.font_path_idx, size=self.font_size)
         self.font_ja = ImageFont.truetype(self.font_path_ja, size=self.font_size)
@@ -35,7 +37,7 @@ class ImagenModel:
 
     def load_imagen(self):
         unet = Unet(
-            dim=32,
+            dim=self.input_channels,
             dim_mults=(1, 2, 4, 8),
             num_resnet_blocks=1,
             layer_attns=(False, False, False, True),
