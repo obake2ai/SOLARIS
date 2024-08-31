@@ -205,5 +205,5 @@ def test_whisper_imagen():
 
 if __name__ == '__main__':
     #test_imagen()
-    # test_whisper()
-    test_whisper_imagen()
+    test_whisper()
+    #test_whisper_imagen()
