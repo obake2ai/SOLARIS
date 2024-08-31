@@ -27,7 +27,8 @@ def record_audio(duration, tmp_filename):
             print(f"[{datetime.now()}] Device is busy, skipping this interval.")
             return None
         else:
-            raise
+            print(f"[{datetime.now()}] An error occurred: {e}")
+            return None
 
     # 音声ファイルを読み込み
     audio = AudioSegment.from_wav(wav_filename)
