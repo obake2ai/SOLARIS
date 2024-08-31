@@ -1,7 +1,7 @@
 from imagen_pytorch import load_imagen_from_checkpoint, ImagenTrainer, Unet, Imagen, ElucidatedImagenConfig, ImagenConfig, UnetConfig, ElucidatedImagen
 import torch
 from .config import path, imagen_config
-from faster_whisper import WhisperModel as WM
+from faster_whisper import WhisperModel as WMModel
 import sys
 import os
 from PIL import ImageDraw, ImageFont, ImageEnhance
@@ -116,19 +116,31 @@ class WhisperModel:
         self.whisper = self.load_whisper()
 
     def load_whisper(self):
-        model = WM("medium", device="cuda" if torch.cuda.is_available() else "cpu")
+        # Faster Whisperのモデルをロード
+        model = FWModel("medium", device="cuda" if torch.cuda.is_available() else "cpu")
         return model
 
     def transcribe_audio2text(self, audio_file):
-        segments, info = self.whisper.transcribe(audio_file)
-        detected_list = []
-        for segment in segments:
-            print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
-            detected_list.append(segment.text)
+        try:
+            # transcribeメソッドにオプションを追加して感度を調整
+            segments, info = self.whisper.transcribe(
+                audio_file,
+                beam_size=1,  # デフォルトのビームサイズ（1に設定）
+                word_timestamps=True,  # 単語ごとのタイムスタンプを有効に
+                condition_on_previous_text=False  # 前のテキストに依存しない
+            )
+            detected_list = []
+            for segment in segments:
+                print(f"[{segment.start:.2f}s - {segment.end:.2f}s] {segment.text}")
+                detected_list.append(segment.text)
 
-        detected_text = ' '.join(detected_list)
+            detected_text = ' '.join(detected_list)
 
-        return detected_text, info.language
+            # テキストが空の場合はそのまま返す
+            return detected_text, info.language
+        except Exception as e:
+            print(f"Error transcribing audio file: {e}")
+            return "", "unknown"
 
     # def transcribe_audio2text(self, audio_file):
     #     segments, info = self.whisper.transcribe(audio_file)
