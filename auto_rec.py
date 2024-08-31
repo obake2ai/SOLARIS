@@ -22,10 +22,17 @@ def record_audio(duration, tmp_filename):
 
     subprocess.run(command, check=True)
 
+    # 音声ファイルを読み込み
     audio = AudioSegment.from_wav(wav_filename)
-    mp3_filename = tmp_filename + '.mp3'
-    audio.export(mp3_filename, format="mp3")
 
+    # ボリュームを底上げする（例：10dB増幅）
+    boosted_audio = audio + imagen_config.AUDIO_GAIN
+
+    # 増幅後の音声をMP3形式でエクスポート
+    mp3_filename = tmp_filename + '.mp3'
+    boosted_audio.export(mp3_filename, format="mp3")
+
+    # 一時的なWAVファイルを削除
     os.remove(wav_filename)
 
     return mp3_filename
