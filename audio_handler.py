@@ -1,6 +1,7 @@
 import time
 import os
 import threading
+import random
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from config import path, imagen_config
