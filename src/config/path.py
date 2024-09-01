@@ -1,4 +1,4 @@
-PATH_IMAGEN = "./models/128-checkpoint-245.pt"
+PATH_IMAGEN = "./models/128/checkpoint-240.pt"
 #PATH_IMAGEN = "./models/checkpoint-395.pt"
 PATH_OUTPUT = "./outputs"
 PATH_INPUT = "./inputs"
