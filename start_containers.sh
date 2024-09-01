@@ -21,4 +21,4 @@ sleep 60
 gnome-terminal --geometry=204x54+0+1080 -- bash -c "docker exec -it solaris02 bash -c 'cd ~/Share/SOLARIS/ && python3 RUN_monitor.py ./auto_rec.py'; exec bash"
 
 # ターミナル4: 右下
-gnome-terminal --geometry=204x54+1920+1080 -- bash -c "cd ~/Share/SOLARIS/ && python3 RUN_monitor.py ./preview.py; exec bash"
+gnome-terminal --geometry=204x54+1920+1080 -- bash -c "cd ~/Share/SOLARIS/ && python3 RUN_monitor.py ./solaris_preview.py; exec bash"
