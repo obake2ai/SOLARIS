@@ -4,11 +4,14 @@ import os
 import argparse
 
 def is_program_running(program_name):
-    """Check if the specified program is running."""
+    """Check if the specified program is running, excluding this script's process."""
     try:
-        # 'pgrep -f program_name' will return a non-zero exit status if no process is found
-        subprocess.check_output(["pgrep", "-f", program_name])
-        return True
+        # Get all processes matching the program name
+        output = subprocess.check_output(["pgrep", "-f", program_name]).decode().splitlines()
+        # Exclude the current process's PID
+        current_pid = str(os.getpid())
+        running_pids = [pid for pid in output if pid != current_pid]
+        return len(running_pids) > 0
     except subprocess.CalledProcessError:
         return False
 
