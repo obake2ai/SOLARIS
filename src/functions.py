@@ -141,13 +141,13 @@ class WhisperModel:
             # transcribeメソッドにオプションを追加して感度を調整
             segments, info = self.whisper.transcribe(
                 audio_file,
-                beam_size=10,  # ビームサイズを1に設定
+                beam_size=5,  # ビームサイズを1に設定
                 word_timestamps=True,  # 単語ごとのタイムスタンプを有効に
                 condition_on_previous_text=False,  # 前のテキストに依存しない
                 temperature=1.0,  # 温度を少し下げる
-                compression_ratio_threshold=4.8,  # 圧縮率の閾値をデフォルトに戻す
+                compression_ratio_threshold=2.4,  # 圧縮率の閾値をデフォルトに戻す
                 log_prob_threshold=None,  # ログ確率の閾値を無効化
-                no_speech_threshold=0.6  # 無音閾値をデフォルトに戻す
+                no_speech_threshold=1.0  # 無音閾値をデフォルトに戻す
             )
             detected_list = []
             for segment in segments:
