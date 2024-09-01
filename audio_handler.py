@@ -50,10 +50,10 @@ class AudioEventHandler(FileSystemEventHandler):
     def process_file(self, audio_path):
         if self.last_processed_file != audio_path:
             try:
+                self.update_indices()
                 output_index = f"{self.index_1}:{self.index_2}"
                 run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_index)
                 self.last_processed_file = audio_path
-                self.update_indices()
             except Exception as e:
                 print(f"Error processing audio file: {e}")
 
