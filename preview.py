@@ -67,9 +67,12 @@ def safe_image_open(path, retries=5, delay=0.5):
                 raise OSError("image file is truncated or corrupted")
 
             return img
-        except (OSError, UnidentifiedImageError):
+        except (OSError, UnidentifiedImageError, SyntaxError):
             time.sleep(delay)
             continue  # 読み込みに失敗した場合、リトライする
+
+    print(f"Warning: Unable to open image file after {retries} retries: {path}")
+    return None
 
 def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL // 4, fps=24):
     pygame.init()
