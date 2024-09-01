@@ -4,13 +4,18 @@ import os
 import argparse
 
 def is_program_running(program_path):
-    """Check if the specified program is running using its full path."""
+    """Check if the specified program is running using its full path, excluding this script's process."""
     try:
-        # Get the list of all running processes
+        # `ps aux` で全てのプロセスをリストし、フルパスで検索
         output = subprocess.check_output(["ps", "aux"]).decode().splitlines()
-        # Check if the full path of the program is in the process list
+        # 現在のスクリプトのプロセスIDを取得
+        current_pid = str(os.getpid())
         for line in output:
-            if program_path in line and "python3" in line:
+            # `python3` コマンドで `program_path` が実行されているか確認し、自分のPIDを除外
+            if f"python3 {program_path}" in line:
+                if current_pid in line:
+                    continue  # 自分のプロセスは無視
+                print(f"Found running process: {line}")  # デバッグ用出力
                 return True
         return False
     except subprocess.CalledProcessError:
@@ -36,4 +41,5 @@ if __name__ == "__main__":
     parser.add_argument("program_path", type=str, help="The path to the Python script to monitor.")
     args = parser.parse_args()
 
+    # `os.path.abspath` を使って絶対パスに変換
     monitor_program(os.path.abspath(args.program_path))
