@@ -4,7 +4,7 @@ import subprocess
 import os
 import time
 import shutil
-from datetime import datetime
+from datetime import datetime, time as dt_time
 
 def record_audio(duration, tmp_filename):
     wav_filename = tmp_filename + '.wav'
@@ -75,11 +75,17 @@ def resolve_busy_device():
     # 例: デバイスのリセットや他のプロセスの終了
     # os.system("sudo fuser -k /dev/snd/*")
 
-def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix):
+def record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix, start_time, end_time):
     counter = 0
     skip_count = 0  # スキップ回数をカウント
 
     while True:
+        current_time = datetime.now().time()
+        if current_time < start_time or current_time > end_time:
+            print(f"[{datetime.now()}] Outside of scheduled recording time. Skipping...")
+            time.sleep(interval)
+            continue
+
         counter += 1
         tmp_filename = os.path.join(tmp_folder, f"{file_prefix}")
         output_filename = os.path.join(output_folder, f"{file_prefix}_{str(counter).zfill(6)}.mp3")
@@ -108,6 +114,8 @@ output_folder = path.PATH_INPUT
 file_prefix = "recording"
 duration = imagen_config.AUDIO_LENGTH
 interval = imagen_config.AUDIO_INTERVAL
+start_time = dt_time(8, 0, 0)  # 録音開始時刻（例：8:00 AM）
+end_time = dt_time(12, 0, 0)   # 録音終了時刻（例：5:00 PM）
 
 if not os.path.exists(tmp_folder):
     os.makedirs(tmp_folder)
@@ -115,4 +123,4 @@ if not os.path.exists(tmp_folder):
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
 
-record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix)
+record_at_intervals(duration, interval, tmp_folder, output_folder, file_prefix, start_time, end_time)
