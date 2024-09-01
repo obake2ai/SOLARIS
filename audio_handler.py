@@ -45,7 +45,7 @@ class AudioEventHandler(FileSystemEventHandler):
         if self.last_processed_file != audio_path:
             try:
                 # Use the loaded models to process audio and generate image
-                output_index = f"{self.index_1}-{self.index_2}"  # 生成する画像のファイル名を設定
+                output_index = f"{self.index_1}:{self.index_2}"  # 生成する画像のファイル名を設定
                 run_imagen(audio_path, self.whisper_model, self.imagen_model, self.output_path, output_index)
                 self.last_processed_file = audio_path  # 現在のファイル名を記憶
                 self.update_indices()  # インデックスを更新
