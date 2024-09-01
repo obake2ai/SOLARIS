@@ -7,6 +7,13 @@ import shutil
 from datetime import datetime, time as dt_time
 import pytz  # pytzをインポート
 
+# JSTのタイムゾーンを設定
+jst = pytz.timezone('Asia/Tokyo')
+
+def get_jst_now():
+    """現在のJST時刻を取得する関数"""
+    return datetime.now(jst)
+
 def record_audio(duration, tmp_filename):
     wav_filename = tmp_filename + '.wav'
     channels = 1  # 初期設定は1チャンネル（モノラル）
@@ -23,24 +30,24 @@ def record_audio(duration, tmp_filename):
             wav_filename
         ]
 
-        print(f"[{datetime.now()}] Recording audio for {duration} seconds to {tmp_filename} with {channels} channel(s) using {device_name}...")
+        print(f"[{get_jst_now()}] Recording audio for {duration} seconds to {tmp_filename} with {channels} channel(s) using {device_name}...")
 
         try:
             subprocess.run(command, check=True)
             break  # 録音成功時はループを抜ける
         except subprocess.CalledProcessError as e:
             if "Device or resource busy" in str(e):
-                print(f"[{datetime.now()}] Device is busy, skipping this interval.")
+                print(f"[{get_jst_now()}] Device is busy, skipping this interval.")
                 return None
             elif "Channels count non available" in str(e):
-                print(f"[{datetime.now()}] Channel count not available for this device. Trying with different channel count.")
+                print(f"[{get_jst_now()}] Channel count not available for this device. Trying with different channel count.")
                 if channels == 1:
                     channels = 2  # モノラルがダメならステレオを試す
                 else:
-                    print(f"[{datetime.now()}] No suitable channel count available. Skipping this interval.")
+                    print(f"[{get_jst_now()}] No suitable channel count available. Skipping this interval.")
                     return None
             else:
-                print(f"[{datetime.now()}] An error occurred: {e}")
+                print(f"[{get_jst_now()}] An error occurred: {e}")
                 return None
 
     # 音声ファイルを読み込み
@@ -60,7 +67,7 @@ def record_audio(duration, tmp_filename):
 
 def move_to_output(tmp_filename, output_filename):
     shutil.move(tmp_filename, output_filename)
-    print(f"[{datetime.now()}] Moved to {output_filename}")
+    print(f"[{get_jst_now()}] Moved to {output_filename}")
 
 def delete_old_files(folder, limit=100):
     files = [os.path.join(folder, f) for f in os.listdir(folder) if os.path.isfile(os.path.join(folder, f))]
@@ -69,10 +76,10 @@ def delete_old_files(folder, limit=100):
         files_to_delete = files[:len(files) - limit]
         for file in files_to_delete:
             os.remove(file)
-            print(f"[{datetime.now()}] Deleted old file {file}")
+            print(f"[{get_jst_now()}] Deleted old file {file}")
 
 def resolve_busy_device():
-    print(f"[{datetime.now()}] Resolving device busy state...")
+    print(f"[{get_jst_now()}] Resolving device busy state...")
     # 例: デバイスのリセットや他のプロセスの終了
     # os.system("sudo fuser -k /dev/snd/*")
 
@@ -82,11 +89,10 @@ def record_at_intervals(duration, interval, tmp_folder, output_folder, file_pref
 
     while True:
         # 現在の時刻をJSTに変換
-        jst = pytz.timezone('Asia/Tokyo')
-        current_time = datetime.now(jst).time()
+        current_time = get_jst_now().time()
 
         if current_time < start_time or current_time > end_time:
-            print(f"[{datetime.now()}] Outside of scheduled recording time (JST). Skipping...")
+            print(f"[{get_jst_now()}] Outside of scheduled recording time (JST). Skipping...")
             time.sleep(interval)
             continue
 
