@@ -30,10 +30,10 @@ def monitor_program(program_path):
     program_name = os.path.basename(program_path)
     while True:
         if not is_program_running(program_path):
-            print(f"{program_name} is not running. Starting it...")
+            print(f"[Monitor] {program_name} is not running. Starting it...")
             run_program(program_path)
         else:
-            print(f"{program_name} is running.")
+            print(f"[Monitor] {program_name} is running.")
         time.sleep(30)  # Wait for 30 seconds before checking again
 
 if __name__ == "__main__":
