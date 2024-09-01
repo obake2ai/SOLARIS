@@ -5,6 +5,7 @@ import os
 import time
 import shutil
 from datetime import datetime, time as dt_time
+import pytz  # pytzをインポート
 
 def record_audio(duration, tmp_filename):
     wav_filename = tmp_filename + '.wav'
@@ -80,9 +81,12 @@ def record_at_intervals(duration, interval, tmp_folder, output_folder, file_pref
     skip_count = 0  # スキップ回数をカウント
 
     while True:
-        current_time = datetime.now().time()
+        # 現在の時刻をJSTに変換
+        jst = pytz.timezone('Asia/Tokyo')
+        current_time = datetime.now(jst).time()
+
         if current_time < start_time or current_time > end_time:
-            print(f"[{datetime.now()}] Outside of scheduled recording time. Skipping...")
+            print(f"[{datetime.now()}] Outside of scheduled recording time (JST). Skipping...")
             time.sleep(interval)
             continue
 
@@ -114,8 +118,8 @@ output_folder = path.PATH_INPUT
 file_prefix = "recording"
 duration = imagen_config.AUDIO_LENGTH
 interval = imagen_config.AUDIO_INTERVAL
-start_time = dt_time(8, 0, 0)  # 録音開始時刻（例：8:00 AM）
-end_time = dt_time(12, 0, 0)   # 録音終了時刻（例：5:00 PM）
+start_time = dt_time(8, 0, 0)  # 録音開始時刻：8:00 AM JST
+end_time = dt_time(12, 0, 0)   # 録音終了時刻：12:00 PM JST（正午）
 
 if not os.path.exists(tmp_folder):
     os.makedirs(tmp_folder)
