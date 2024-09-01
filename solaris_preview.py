@@ -74,7 +74,7 @@ def safe_image_open(path, retries=5, delay=0.5):
     print(f"Warning: Unable to open image file after {retries} retries: {path}")
     return None
 
-def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL - imagen_config.AUDIO_STAY, fps=24):
+def main(watch_folder, preview_folder, transition_duration=imagen_config.AUDIO_INTERVAL // 2, fps=24):
     pygame.init()
     info = pygame.display.Info()
     screen = pygame.display.set_mode((info.current_w, info.current_h), pygame.FULLSCREEN)
