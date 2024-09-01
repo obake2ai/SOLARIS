@@ -13,8 +13,8 @@ SCREEN_WIDTH=$(xrandr | grep '*' | awk '{print $1}' | cut -d'x' -f1)
 SCREEN_HEIGHT=$(xrandr | grep '*' | awk '{print $1}' | cut -d'x' -f2)
 
 # ターミナルウィンドウのサイズと位置を計算
-TERM_WIDTH=$((SCREEN_WIDTH / 2))
-TERM_HEIGHT=$((SCREEN_HEIGHT / 2))
+TERM_WIDTH=$((SCREEN_WIDTH / 4))
+TERM_HEIGHT=$((SCREEN_HEIGHT / 4))
 
 # ターミナル1: 左上
 gnome-terminal --geometry=${TERM_WIDTH}x${TERM_HEIGHT}+0+0 -- bash -c "docker exec -it solaris02 bash -c 'cd ~/Share/SOLARIS/ && python3 RUN_monitor.py ./audio_handler.py'; exec bash"
