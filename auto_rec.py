@@ -125,7 +125,7 @@ file_prefix = "recording"
 duration = imagen_config.AUDIO_LENGTH
 interval = imagen_config.AUDIO_INTERVAL
 start_time = dt_time(10, 0, 0)  # 録音開始時刻：8:00 AM JST
-end_time = dt_time(24, 0, 0)   # 録音終了時刻：12:00 PM JST（正午）
+end_time = dt_time(23, 59, 0)   # 録音終了時刻：12:00 PM JST（正午）
 
 if not os.path.exists(tmp_folder):
     os.makedirs(tmp_folder)
