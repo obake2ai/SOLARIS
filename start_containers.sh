@@ -34,8 +34,8 @@ echo "Terminal width: ${TERM_WIDTH}, Terminal height: ${TERM_HEIGHT}" >> $LOGFIL
 # ターミナル1: 左上
 gnome-terminal --geometry=${TERM_WIDTH}x${TERM_HEIGHT}+0+0 -- bash -c "docker exec -it solaris02 bash -c 'cd ~/Share/SOLARIS/ && python3 RUN_monitor.py ./audio_handler.py'; exec bash" >> $LOGFILE 2>&1
 
-# ターミナル2: 右上
-gnome-terminal --geometry=${TERM_WIDTH}x${TERM_HEIGHT}+$((SCREEN_WIDTH - TERM_WIDTH))+0 -- bash -c "docker exec -it solaris02 bash -c 'cd ~/Share/SOLARIS/ && watch -n 5 nvidia-smi'; exec bash" >> $LOGFILE 2>&1
+# # ターミナル2: 右上
+# gnome-terminal --geometry=${TERM_WIDTH}x${TERM_HEIGHT}+$((SCREEN_WIDTH - TERM_WIDTH))+0 -- bash -c "docker exec -it solaris02 bash -c 'cd ~/Share/SOLARIS/ && watch -n 5 nvidia-smi'; exec bash" >> $LOGFILE 2>&1
 
 # 60秒間待機
 echo "Sleeping for 60 seconds..." >> $LOGFILE
