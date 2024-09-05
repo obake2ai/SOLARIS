@@ -18,10 +18,9 @@ else
     docker start solaris02 >> $LOGFILE 2>&1
 fi
 
-# 画面の解像度を取得
-SCREEN_RESOLUTION=$(xrandr | grep '*' | awk '{print $1}')
-SCREEN_WIDTH=$(echo $SCREEN_RESOLUTION | cut -d'x' -f1)
-SCREEN_HEIGHT=$(echo $SCREEN_RESOLUTION | cut -d'x' -f2)
+# 画面の解像度を静的に設定
+SCREEN_WIDTH=1920
+SCREEN_HEIGHT=1080
 
 # ログに画面の解像度を記録
 echo "Screen resolution: ${SCREEN_WIDTH}x${SCREEN_HEIGHT}" >> $LOGFILE
